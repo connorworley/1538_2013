@@ -1,0 +1,7 @@
+PPC603gnu/
+.settings/
+.cproject
+.project
+.wrproject
+Makefile
+.wrmakefile
