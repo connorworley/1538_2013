@@ -44,9 +44,33 @@ void OperatorController::handle()
 //		bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
 	
 	//bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
-	bot->GetArm()->SetRaw(cb->getDriveStickY());
-	bot->GetIntake()->SetRaw(0);
-	bot->GetFeeder()->SetRaw(0);
-	bot->GetShooter()->SetRaw(0);
+	bot->GetArm()->SetRaw(-cb->getDriveStickY());
+	
+	if(cb->getOperatorButton(2))
+	{
+		bot->GetIntake()->SetRaw(-1);
+	} 
+	else 
+	{
+		bot->GetIntake()->SetRaw(0);
+	}
+	
+	if(!cb->getOperatorButton(10))
+	{
+		bot->GetShooter()->SetRaw(1);
+	} 
+	else 
+	{
+		bot->GetShooter()->SetRaw(0);
+	}
+	
+	if(cb->getOperatorButton(5))
+	{
+		bot->GetFeeder()->SetRaw(-0.5);
+	} 
+	else 
+	{
+		bot->GetFeeder()->SetRaw(0);
+	}
 }
 
