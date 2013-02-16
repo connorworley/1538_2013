@@ -88,7 +88,6 @@ private:
 	
 	// Drive shifting pistons
 	Solenoid *m_Shifter;
-	Solenoid *m_ArmLock;
 		
 	//Sensors
 	Gyro * m_Gyro;

@@ -59,7 +59,7 @@ public:
 //		constantsLastModified = data.st_mtime;
 //		
 //		fieldTime = new Timer();
-//		//SetPeriod((1.0/200.0));
+		SetPeriod((1.0/200.0));
 //
 //		constants = CowConstants::getInstance();
 //		constants->restoreData();

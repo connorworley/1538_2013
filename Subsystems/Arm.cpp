@@ -4,16 +4,17 @@
 
 using namespace CowLib;
 
-Arm::Arm(int motorApwm, int motorBpwm, int potPwm) :
-	PID_P(14),
-	PID_D(0),
+Arm::Arm(int motorApwm, int motorBpwm, int potPwm, int lockSolenoid) :
+	PID_P(8),
+	PID_D(1),
 	m_PreviousError(0),
 	m_RawValue(0)
 {
 	m_MotorA = new Talon(motorApwm);
 	m_MotorB = new Talon(motorBpwm);
 	m_Pot = new AnalogChannel(potPwm);
-	m_Setpoint = m_Pot->GetVoltage();
+	m_Setpoint = ARM_SETPOINT_GROUND;
+	m_Lock = new Solenoid(lockSolenoid);
 }
 
 void Arm::Handle()
@@ -25,13 +26,21 @@ void Arm::Handle()
 	{
 		output = 0.5;
 	}
-	if(m_Setpoint > 3.441)
+	if(output < -0.8)
+	{
+		output = -0.8;
+	}
+	if((m_Setpoint > ARM_SETPOINT_GROUND + 0.01 && output > 0)|| m_Pot->GetVoltage() < 1 || !m_Lock->Get())
 	{
 		output = 0;
+		m_MotorA->Set(m_RawValue);
+		m_MotorB->Set(m_RawValue);
+	} else {
+		m_MotorA->Set(output);
+		m_MotorB->Set(output);
 	}
+	printf("%f\t\t%f\t\t%f\n", m_Setpoint, m_Pot->GetVoltage(), output);
 	m_PreviousError = error;
-	m_MotorA->Set(output);
-	m_MotorB->Set(output);
 }
 
 float Arm::GetSetpoint()
@@ -46,9 +55,12 @@ void Arm::SetSetpoint(float value)
 
 void Arm::SetRaw(float value)
 {
-	//if(value < 0)
-	//	value = 0;
-	this->m_RawValue = value;
+	m_RawValue = value;
+}
+
+void Arm::Lock(bool value)
+{
+	m_Lock->Set(value);
 }
 
 Arm::~Arm()

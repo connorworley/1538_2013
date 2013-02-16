@@ -49,14 +49,13 @@ CowRobot::CowRobot()
 	m_RightDrive = new Talon(RIGHT_DRIVE);
 	m_LeftDrive = new Talon(LEFT_DRIVE);
 	
-	m_Arm = new Arm(ARM_A, ARM_B, ARM_POT);
+	m_Arm = new Arm(ARM_A, ARM_B, ARM_POT, ARMLOCK_SOLENOID_CHAN);
 	m_Intake = new Roller(INTAKE_A, INTAKE_B);
 	m_Feeder = new Roller(FEEDER_A, FEEDER_B);
 	m_Shooter = new Roller(SHOOTER_A, SHOOTER_B);
 
-//	//Solenoids
-//	m_Shifter = new Solenoid(SHIFTER_SOLENOID_CHAN);
-//	m_ArmLock = new Solenoid(ARMLOCK_SOLENOID_CHAN);
+	//Solenoids
+	m_Shifter = new Solenoid(SHIFTER_SOLENOID_CHAN);
 
 	// Set up encoders
 	m_Encoder = new Encoder(LEFT_ENCODER_A_CHAN, LEFT_ENCODER_B_CHAN, true, CounterBase::k1X);
@@ -89,9 +88,6 @@ void CowRobot::Handle()
 	// Default drive
 	float tmpLeftMotor = m_LeftDriveValue;
 	float tmpRightMotor = m_RightDriveValue;
-
-	ShifterStates tmpShiftPos = m_CurrentShiftState;
-	AskForShift(tmpShiftPos);
 
 	SetLeftMotors(tmpLeftMotor);
 	SetRightMotors(tmpRightMotor);
@@ -212,6 +208,10 @@ void CowRobot::Shift(ShifterStates shifterPosition)
 
 void CowRobot::AskForShift(ShifterStates shifterState)
 {
+	if(shifterState != m_CurrentShiftState)
+	{
+		Shift(m_CurrentShiftState);
+	}
 	m_CurrentShiftState = shifterState;
 }
 

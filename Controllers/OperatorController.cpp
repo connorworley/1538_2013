@@ -44,7 +44,10 @@ void OperatorController::handle()
 	else
 		bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
 	
-	bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
+	//bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
+	
+	bot->GetArm()->SetRaw(-cb->getDriveStickY());
+	
 	float armStick = 0;//-cb->getOperatorY();
 	if(armStick < 0.05 && armStick > -0.05)
 	{
@@ -83,19 +86,25 @@ void OperatorController::handle()
 	
 	if(cb->getOperatorButton(8))
 	{
-		bot->GetArm()->SetSetpoint(2.139);
+		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.302);
 	}
 	if(cb->getOperatorButton(9))
 	{
-		bot->GetArm()->SetSetpoint(2.201);
+		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.24);
 	}
 	if(cb->getOperatorButton(7))
 	{
-		bot->GetArm()->SetSetpoint(2.247);
+		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.194);
 	}
 	if(cb->getOperatorButton(1))
 	{
-		bot->GetArm()->SetSetpoint(3.441);
+		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND);
+	}
+	if(!cb->getOperatorButton(3) && !cb->getOperatorButton(4))
+	{
+		bot->GetArm()->Lock(0);
+	} else {
+		bot->GetArm()->Lock(1);
 	}
 }
 
