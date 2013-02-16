@@ -37,6 +37,7 @@ private:
 	bool previousRMP;
 	bool RMPState;
 	int previousShooter;
+	float m_PreviousArmStick;
 	double shooterSpeedOffset;
 	double shooterSpeedOffsetFender;
 	double shooterSpeedOffsetFenderFunnel;

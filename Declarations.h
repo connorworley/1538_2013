@@ -37,6 +37,10 @@
 #define INTAKE_B				10
 
 
+// ANALOG IN
+#define ARM_POT					1
+
+
 //DIGITAL IN
 #define LEFT_ENCODER_A_CHAN		1
 #define LEFT_ENCODER_B_CHAN		2

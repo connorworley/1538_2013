@@ -6,13 +6,22 @@
 class Arm
 {
 	private:
-		Victor* motorA;
-		Victor* motorB;
-		float rawValue;
+		const float PID_P;
+		const float PID_D;
+	
+		Talon* m_MotorA;
+		Talon* m_MotorB;
+		AnalogChannel* m_Pot;
+			
+		float m_Setpoint;
+		float m_PreviousError;
+		float m_RawValue;
 	
 	public:
-		Arm(int motorApwm, int motorBpwm);
+		Arm(int motorApwm, int motorBpwm, int potPwm);
 		void Handle();
+		float Arm::GetSetpoint();
+		void SetSetpoint(float value);
 		void SetRaw(float value);
 		
 		~Arm();

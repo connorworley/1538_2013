@@ -6,9 +6,9 @@
 class Roller
 {
 	private:
-		Victor* motorA;
-		Victor* motorB;
-		float rawValue;
+		Talon* m_MotorA;
+		Talon* m_MotorB;
+		float m_RawValue;
 	
 	public:
 		Roller(int motorApwm, int motorBpwm);

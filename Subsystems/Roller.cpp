@@ -4,25 +4,26 @@
 
 using namespace CowLib;
 
-Roller::Roller(int motorApwm, int motorBpwm)
+Roller::Roller(int motorApwm, int motorBpwm) :
+	m_RawValue(0)
 {
-	motorA = new Victor(motorApwm);
-	motorB = new Victor(motorBpwm);
+	m_MotorA = new Talon(motorApwm);
+	m_MotorB = new Talon(motorBpwm);
 }
 
 void Roller::Handle()
 {
-	motorA->Set(rawValue);
-	motorB->Set(rawValue);
+	m_MotorA->Set(m_RawValue);
+	m_MotorB->Set(m_RawValue);
 }
 
 void Roller::SetRaw(float value)
 {
-	this->rawValue = value;
+	this->m_RawValue = value;
 }
 
 Roller::~Roller()
 {
-	delete motorA;
-	delete motorB;
+	delete m_MotorA;
+	delete m_MotorB;
 }

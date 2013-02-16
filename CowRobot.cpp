@@ -46,10 +46,10 @@ CowRobot * CowRobot::GetInstance()
 CowRobot::CowRobot()
 {
 	// Set up drive motors
-	m_RightDrive = new Victor(RIGHT_DRIVE);
-	m_LeftDrive = new Victor(LEFT_DRIVE);
+	m_RightDrive = new Talon(RIGHT_DRIVE);
+	m_LeftDrive = new Talon(LEFT_DRIVE);
 	
-	m_Arm = new Arm(ARM_A, ARM_B);
+	m_Arm = new Arm(ARM_A, ARM_B, ARM_POT);
 	m_Intake = new Roller(INTAKE_A, INTAKE_B);
 	m_Feeder = new Roller(FEEDER_A, FEEDER_B);
 	m_Shooter = new Roller(SHOOTER_A, SHOOTER_B);

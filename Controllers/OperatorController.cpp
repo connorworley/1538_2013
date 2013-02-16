@@ -27,7 +27,8 @@
 
 // Constructor
 // TODO: We might not need to pass in Joysticks, if they come from the ControlBoard
-OperatorController::OperatorController()
+OperatorController::OperatorController() :
+	m_PreviousArmStick(0)
 {
 	constants = CowConstants::getInstance();
 	bot = CowRobot::GetInstance();
@@ -37,14 +38,21 @@ OperatorController::OperatorController()
 // call this when you want to update the bot from a driver
 void OperatorController::handle()
 {
-//	// Drive shifting
-//	if( cb->getButtonShifter() )
-//		bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
-//	else
-//		bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
+	// Drive shifting
+	if( cb->getButtonShifter() )
+		bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
+	else
+		bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
 	
-	//bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
-	bot->GetArm()->SetRaw(-cb->getDriveStickY());
+	bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
+	float armStick = 0;//-cb->getOperatorY();
+	if(armStick < 0.05 && armStick > -0.05)
+	{
+		armStick = 0;
+	}
+	armStick /= 300.0f;
+	float armValue = armStick - (m_PreviousArmStick - armStick);
+	bot->GetArm()->SetSetpoint(bot->GetArm()->GetSetpoint() + armValue);
 	
 	if(cb->getOperatorButton(2))
 	{
@@ -71,6 +79,23 @@ void OperatorController::handle()
 	else 
 	{
 		bot->GetFeeder()->SetRaw(0);
+	}
+	
+	if(cb->getOperatorButton(8))
+	{
+		bot->GetArm()->SetSetpoint(2.139);
+	}
+	if(cb->getOperatorButton(9))
+	{
+		bot->GetArm()->SetSetpoint(2.201);
+	}
+	if(cb->getOperatorButton(7))
+	{
+		bot->GetArm()->SetSetpoint(2.247);
+	}
+	if(cb->getOperatorButton(1))
+	{
+		bot->GetArm()->SetSetpoint(3.441);
 	}
 }
 

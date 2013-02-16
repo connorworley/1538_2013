@@ -83,8 +83,8 @@ private:
 	void Shift(ShifterStates shifterState);
 	
 	// Drive Motors
-	Victor *m_RightDrive;
-	Victor *m_LeftDrive;
+	Talon *m_RightDrive;
+	Talon *m_LeftDrive;
 	
 	// Drive shifting pistons
 	Solenoid *m_Shifter;
