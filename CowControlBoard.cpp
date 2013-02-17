@@ -39,6 +39,7 @@ CowControlBoard::CowControlBoard()
 	driveStick = new Joystick(1);
 	steeringWheel = new Joystick(2);
 	operatorPanel = new Joystick(3);
+	m_OperatorArm = new Joystick(4);
 	autoLatch = false;
 	alignLatch = false;
 	rampLatch = false;
@@ -99,6 +100,10 @@ float CowControlBoard::getOperatorDpadX()
 float CowControlBoard::getOperatorDpadY()
 {
 	return operatorPanel->GetRawAxis(6);
+}
+float CowControlBoard::GetOperatorArmY()
+{
+	return m_OperatorArm->GetRawAxis(LEFT_GAMEPAD_Y);
 }
 
 bool CowControlBoard::getDriveButton(const int button)

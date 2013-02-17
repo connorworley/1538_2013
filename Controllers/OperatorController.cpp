@@ -46,9 +46,8 @@ void OperatorController::handle()
 	
 	bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
 	
-	//bot->GetArm()->SetRaw(-cb->getDriveStickY());
-	
-	float armStick = 0;//-cb->getOperatorY();
+	bot->GetArm()->SetRaw( -cb->GetOperatorArmY());
+	float armStick = -cb->GetOperatorArmY();//-cb->getOperatorY();
 	if(armStick < 0.05 && armStick > -0.05)
 	{
 		armStick = 0;
@@ -59,52 +58,37 @@ void OperatorController::handle()
 	
 	if(cb->getOperatorButton(2))
 	{
+		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND);
 		bot->GetIntake()->SetRaw(-1);
-	} 
+	}
 	else 
 	{
 		bot->GetIntake()->SetRaw(0);
 	}
 	
 	if(!cb->getOperatorButton(10))
-	{
 		bot->GetShooter()->SetRaw(1);
-	} 
 	else 
-	{
 		bot->GetShooter()->SetRaw(0);
-	}
 	
 	if(cb->getOperatorButton(5))
-	{
 		bot->GetFeeder()->SetRaw(-0.5);
-	} 
 	else 
-	{
 		bot->GetFeeder()->SetRaw(0);
-	}
 	
 	if(cb->getOperatorButton(8))
-	{
 		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.302);
-	}
 	if(cb->getOperatorButton(9))
-	{
 		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.24);
-	}
 	if(cb->getOperatorButton(7))
-	{
 		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.194);
-	}
+	if(cb->getSteeringButton(3))
+		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 0.04);
 	if(cb->getOperatorButton(1))
-	{
-		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND);
-	}
+		bot->GetArm()->SetSetpoint(ARM_SETPOINT_STARTING_POSITION);
 	if(!cb->getOperatorButton(3) && !cb->getOperatorButton(4))
-	{
 		bot->GetArm()->Lock(0);
-	} else {
+	else
 		bot->GetArm()->Lock(1);
-	}
 }
 

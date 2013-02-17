@@ -50,6 +50,7 @@ private:
 	Joystick* driveStick;
 	Joystick* steeringWheel;
 	Joystick* operatorPanel;
+	Joystick* m_OperatorArm;
 	
 	// Construction
 	CowControlBoard();
@@ -66,6 +67,7 @@ public:
 	float getOperatorY();
 	float getOperatorDpadX();
 	float getOperatorDpadY();
+	float GetOperatorArmY();
 	
 	bool getDriveButton(int button);
 	bool getSteeringButton(int button);

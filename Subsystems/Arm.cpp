@@ -36,7 +36,9 @@ void Arm::Handle()
 		output = 0;
 		m_MotorA->Set(m_RawValue);
 		m_MotorB->Set(m_RawValue);
-	} else {
+	} 
+	else 
+	{
 		m_MotorA->Set(output);
 		m_MotorB->Set(output);
 	}
@@ -52,7 +54,7 @@ float Arm::GetSetpoint()
 void Arm::SetSetpoint(float value)
 {
 	m_Setpoint = value;
-}
+} 
 
 void Arm::SetRaw(float value)
 {
