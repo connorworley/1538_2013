@@ -44,9 +44,9 @@ void OperatorController::handle()
 	else
 		bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
 	
-	//bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
+	bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
 	
-	bot->GetArm()->SetRaw(-cb->getDriveStickY());
+	//bot->GetArm()->SetRaw(-cb->getDriveStickY());
 	
 	float armStick = 0;//-cb->getOperatorY();
 	if(armStick < 0.05 && armStick > -0.05)

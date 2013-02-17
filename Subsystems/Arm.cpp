@@ -30,6 +30,7 @@ void Arm::Handle()
 	{
 		output = -0.8;
 	}
+	// 0.15 = -1.2%
 	if((m_Setpoint > ARM_SETPOINT_GROUND + 0.01 && output > 0)|| m_Pot->GetVoltage() < 1 || !m_Lock->Get())
 	{
 		output = 0;
