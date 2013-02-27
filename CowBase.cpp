@@ -69,9 +69,9 @@ public:
 		m_dsLCD = DriverStationLCD::GetInstance();
 		bot = CowRobot::GetInstance();	
 		opController = new OperatorController();
-		//autoController = AutoModeController::getInstance();
-		//autoSelector = new AutoModeSelector();
-		//autoSelector->increment();
+		autoController = AutoModeController::getInstance();
+		autoSelector = new AutoModeSelector();
+		autoSelector->increment();
 //		autoSelector->incrementSecondary();	
 	}
 	void RobotInit(void) {	
@@ -90,7 +90,9 @@ public:
 //		}
 		
 		//constants->restoreData();
-	
+		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
+		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::finalizeUpdate();
 		autoIndex = 1;
 	}
 	void AutonomousInit(void) {
@@ -101,7 +103,6 @@ public:
 		autoSelector->writeToAutoModeController(autoController);
 		CowRobot::GetInstance()->GetEncoder()->Reset();
 		CowRobot::GetInstance()->GetGyro()->Reset();
-		
 		
 	}
 	void TeleopInit(void) 
@@ -124,16 +125,16 @@ public:
 		//bot->getServer()->handle();
 //		opController->handle();
 //		autoController->reset();	
-//		if( opController->cb->getButtonAutoSelect())
-//		{
-//			autoSelector->increment();
-//		}
+		if( opController->cb->getButtonAutoSelect())
+		{
+			autoSelector->increment();
+		}
 //
 //
 //		//Print it
-//		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-//		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
-//		PrintToLCD::finalizeUpdate();
+		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
+		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::finalizeUpdate();
 //		//sendIOPortData();
 	}
 	void AutonomousPeriodic(void) {
@@ -141,9 +142,9 @@ public:
 //		autoController->handle();
 //		bot->Handle();
 //		
-//		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-//		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
-//		PrintToLCD::finalizeUpdate();
+		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
+		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::finalizeUpdate();
 		
 		//sendIOPortData();
 	}
@@ -151,8 +152,8 @@ public:
 		//bot->getServer()->handle();
 		opController->handle();
 		bot->Handle();
-//		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-//		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
+		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
 //		PrintToLCD::print(true, 3, 1, "K:%2f", constants->getValueForKey("shooterKey"));
 //		PrintToLCD::finalizeUpdate();
 ////		

@@ -54,6 +54,20 @@ public:
 		
 	}
 	
+	RobotCommand(RobotCommandNames_e cmd, long encoder, float heading, float shooter, float armsetpoint, float intake, float timeout):
+	m_Command(cmd),
+	m_EncoderCount(encoder),
+	m_Heading(heading),
+	m_Shooter(shooter),
+	m_ArmSetpoint(armsetpoint),
+	m_Intake(intake),
+	m_Timeout(timeout)
+	{
+		
+	}
+	
+	
+	
 	RobotCommandNames_e m_Command;
 	long m_EncoderCount;
 	float m_Heading;
@@ -86,8 +100,8 @@ private:
 public:
 	AutoModeController();
 	static AutoModeController* getInstance();
-	void addCommand(RobotCommandNames_e cmd, cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5, cmdArg arg6, cmdArg arg7, cmdArg arg8);
-	void addCommand();
+	
+	void addCommand(RobotCommand cmd);
 
 	bool handle();
 	void reset();

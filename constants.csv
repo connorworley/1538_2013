@@ -1,5 +1,7 @@
 ArmGroundPosition, 3.4
 ArmLowPosition, 2.0632
 ArmMidPosition, 2.0431
-ArmHighPosition, 2.000
+ArmHighPosition, 1.98
 ArmStartingPosition, 1.499
+ArmApproachHang, 2.650
+ArmFinishHang, 3.6

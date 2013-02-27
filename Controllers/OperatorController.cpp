@@ -92,7 +92,11 @@ void OperatorController::handle()
 	if(cb->getOperatorButton(7))
 		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmLowPosition"));
 	if(cb->getSteeringButton(3))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition") - 0.3);
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition") - 0.19);
+	if(cb->getSteeringButton(1))
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmApproachHang"));
+	if(cb->getSteeringButton(4))
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition"));
 	if(cb->getDriveButton(1))
 		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmStartingPosition"));
 	

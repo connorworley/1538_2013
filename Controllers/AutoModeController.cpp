@@ -40,7 +40,7 @@ AutoModeController::AutoModeController()
 {
 	bot = CowRobot::GetInstance();
 	timer = new Timer();
-	//curCmd = cmdNULL;
+	curCmd = RobotCommand();
 	
 	extendArm = false;
 	
@@ -59,88 +59,72 @@ Relay::Value toRelayValue(cmdArg val)
 		return Relay::kOff;
 }
 
-void AutoModeController::addCommand(RobotCommandNames_e cmd, 
-					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5, cmdArg arg6, cmdArg arg7, cmdArg arg8)
+void AutoModeController::addCommand(RobotCommand cmd)
 {
-//	// Make the new command
-//	RobotCommand newCmd;
-//	newCmd.cmd = cmd;
-//	newCmd.encoderCount = arg1;
-//	newCmd.heading = arg2;
-//	newCmd.shooter = arg3;
-//	newCmd.arm = arg4;
-//	newCmd.intake = arg5;
-//	newCmd.chute = arg6;
-//	newCmd.nBallsWanted = arg7;
-//	newCmd.timeout = arg8;
-//	
-//	
-//	// add it to the end of the list
-//	cmdList.push_back(newCmd);
+	cmdList.push_back(cmd);
 }
 
 void AutoModeController::reset()
 {
 	//CowConstants * rc = CowConstants::getInstance();
-	bot->GetGyro()->Reset();
-	bot->GetEncoder()->Reset();
+	//bot->GetGyro()->Reset();
+	//bot->GetEncoder()->Reset();
 
 	cmdList.clear();
-//	curCmd = cmdNULL;
+	curCmd = RobotCommand();
 	bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
 }
 
 bool AutoModeController::handle()
 {
-//	bool result = false;
-//	bool thisIsNull = false;
-//	
-//	// Run the command
-//	switch(curCmd.cmd)
-//	{
-//		case CMD_DRIVE:
-//			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
-//			break;
-//		case CMD_DRIVE_DIST:
-//			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
-//			break;
-//		case CMD_TURN:
-//			result = turnHeading(curCmd.heading);
-//			bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
-//			bot->GetEncoder()->Reset();
-//
-//			break;
-//		case CMD_NULL:
-//			thisIsNull = true;
-//			doNothing();
-//			
-//			result = true;
-//			break;
-//			
-//		case CMD_WAIT:
-//			doNothing();
-//			
-//			result = false;
-//			break;
-//		
-//		default :
-//			doNothing();
-//			result = true;
-//			break;
-//	}
-//	
-//	// Check if this command is done
-//	if(result == true || thisIsNull || timer->Get() > curCmd.timeout){
-//		// This command is done, go get the next one
-//		if(cmdList.size() > 0 )
-//		{
-//			curCmd = cmdList.front();
-//			cmdList.pop_front();
-//			timer->Reset();
-//		}
-//		else curCmd = cmdNULL;
-//	}
-	return false;
+	bool result = false;
+	bool thisIsNull = false;
+	
+	// Run the command
+	switch(curCmd.m_Command)
+	{
+		case CMD_DRIVE:
+			result = driveDistanceWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading);
+			break;
+		case CMD_DRIVE_DIST:
+			result = driveDistancePWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading);
+			break;
+		case CMD_TURN:
+			result = turnHeading(curCmd.m_Heading);
+			bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
+			bot->GetEncoder()->Reset();
+
+			break;
+		case CMD_NULL:
+			thisIsNull = true;
+			doNothing();
+			
+			result = true;
+			break;
+			
+		case CMD_WAIT:
+			doNothing();
+			
+			result = false;
+			break;
+		
+		default :
+			doNothing();
+			result = true;
+			break;
+	}
+	
+	// Check if this command is done
+	if(result == true || thisIsNull || timer->Get() > curCmd.m_Timeout){
+		// This command is done, go get the next one
+		if(cmdList.size() > 0 )
+		{
+			curCmd = cmdList.front();
+			cmdList.pop_front();
+			timer->Reset();
+		}
+		else curCmd = RobotCommand();
+	}
 }
 
 // Drive Functions

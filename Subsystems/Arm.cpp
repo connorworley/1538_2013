@@ -34,10 +34,10 @@ void Arm::Handle()
 	{
 		output = 0.8;
 	}
-//	if(output < -0.8)
-//	{
-//		output = -0.8;
-//	}
+	if(output < -0.8)
+	{
+		output = -0.8;
+	}
 	
 	if(m_LockState == UNLOCKING  && (Timer::GetFPGATimestamp() - m_LockTimer) > 0.5)
 	{
@@ -47,7 +47,7 @@ void Arm::Handle()
 	// 0.15 = -1.2%
 	if(m_LockState == UNLOCKED)
 	{
-		if((m_Setpoint > CowConstants::getInstance()->getValueForKey("ArmGroundPosition") + 0.01 && output > 0)|| m_Pot->GetVoltage() < 1)
+		if((m_Setpoint > CowConstants::getInstance()->getValueForKey("ArmGroundPosition") + 0.01 && output > 0 && m_Setpoint != CowConstants::getInstance()->getValueForKey("ArmFinishHang"))|| m_Pot->GetVoltage() < 1)
 		{
 			output = 0;
 		

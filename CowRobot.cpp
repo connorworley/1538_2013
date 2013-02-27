@@ -63,9 +63,9 @@ CowRobot::CowRobot()
 	m_Encoder->SetReverseDirection(false);
 	m_Encoder->Start();
 
-//	m_Gyro = new Gyro(GYRO_CHAN);
-//	m_Gyro->SetSensitivity(0.0005); //Kiets
-//	m_Gyro->Reset();
+	m_Gyro = new Gyro(2);
+	m_Gyro->SetSensitivity(0.0005); //Kiets
+	m_Gyro->Reset();
 
 	velTimer = new Timer();
 	velTimer->Start();
