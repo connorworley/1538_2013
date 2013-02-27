@@ -1,18 +1,18 @@
 //=============================================================================
 // File: AutoModeController.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
-// All rights reserved.  Cow proprietary and confidential.
+// COPYRIGHT 2013 The Holy Cows (1538)
+// All rights reserved.  1538 proprietary and confidential.
 //             
-// The party receiving this software directly from Cow (the "Recipient")
+// The party receiving this software directly from 1538 (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// Cow(the "Agreement").  The software may be used in source code form
+// 1538 (the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. Cow retains all ownership rights in and to
+// the Recipient to its users. 1538 retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -40,7 +40,7 @@ AutoModeController::AutoModeController()
 {
 	bot = CowRobot::GetInstance();
 	timer = new Timer();
-	curCmd = cmdNULL;
+	//curCmd = cmdNULL;
 	
 	extendArm = false;
 	
@@ -62,21 +62,21 @@ Relay::Value toRelayValue(cmdArg val)
 void AutoModeController::addCommand(RobotCommandNames_e cmd, 
 					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5, cmdArg arg6, cmdArg arg7, cmdArg arg8)
 {
-	// Make the new command
-	RobotCommand newCmd;
-	newCmd.cmd = cmd;
-	newCmd.encoderCount = arg1;
-	newCmd.heading = arg2;
-	newCmd.shooter = arg3;
-	newCmd.arm = arg4;
-	newCmd.intake = arg5;
-	newCmd.chute = arg6;
-	newCmd.nBallsWanted = arg7;
-	newCmd.timeout = arg8;
-	
-	
-	// add it to the end of the list
-	cmdList.push_back(newCmd);
+//	// Make the new command
+//	RobotCommand newCmd;
+//	newCmd.cmd = cmd;
+//	newCmd.encoderCount = arg1;
+//	newCmd.heading = arg2;
+//	newCmd.shooter = arg3;
+//	newCmd.arm = arg4;
+//	newCmd.intake = arg5;
+//	newCmd.chute = arg6;
+//	newCmd.nBallsWanted = arg7;
+//	newCmd.timeout = arg8;
+//	
+//	
+//	// add it to the end of the list
+//	cmdList.push_back(newCmd);
 }
 
 void AutoModeController::reset()
@@ -86,60 +86,60 @@ void AutoModeController::reset()
 	bot->GetEncoder()->Reset();
 
 	cmdList.clear();
-	curCmd = cmdNULL;
+//	curCmd = cmdNULL;
 	bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
 }
 
 bool AutoModeController::handle()
 {
-	bool result = false;
-	bool thisIsNull = false;
-	
-	// Run the command
-	switch(curCmd.cmd)
-	{
-		case CMD_DRIVE:
-			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
-			break;
-		case CMD_DRIVE_DIST:
-			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
-			break;
-		case CMD_TURN:
-			result = turnHeading(curCmd.heading);
-			bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
-			bot->GetEncoder()->Reset();
-
-			break;
-		case CMD_NULL:
-			thisIsNull = true;
-			doNothing();
-			
-			result = true;
-			break;
-			
-		case CMD_WAIT:
-			doNothing();
-			
-			result = false;
-			break;
-		
-		default :
-			doNothing();
-			result = true;
-			break;
-	}
-	
-	// Check if this command is done
-	if(result == true || thisIsNull || timer->Get() > curCmd.timeout){
-		// This command is done, go get the next one
-		if(cmdList.size() > 0 )
-		{
-			curCmd = cmdList.front();
-			cmdList.pop_front();
-			timer->Reset();
-		}
-		else curCmd = cmdNULL;
-	}
+//	bool result = false;
+//	bool thisIsNull = false;
+//	
+//	// Run the command
+//	switch(curCmd.cmd)
+//	{
+//		case CMD_DRIVE:
+//			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
+//			break;
+//		case CMD_DRIVE_DIST:
+//			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
+//			break;
+//		case CMD_TURN:
+//			result = turnHeading(curCmd.heading);
+//			bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
+//			bot->GetEncoder()->Reset();
+//
+//			break;
+//		case CMD_NULL:
+//			thisIsNull = true;
+//			doNothing();
+//			
+//			result = true;
+//			break;
+//			
+//		case CMD_WAIT:
+//			doNothing();
+//			
+//			result = false;
+//			break;
+//		
+//		default :
+//			doNothing();
+//			result = true;
+//			break;
+//	}
+//	
+//	// Check if this command is done
+//	if(result == true || thisIsNull || timer->Get() > curCmd.timeout){
+//		// This command is done, go get the next one
+//		if(cmdList.size() > 0 )
+//		{
+//			curCmd = cmdList.front();
+//			cmdList.pop_front();
+//			timer->Reset();
+//		}
+//		else curCmd = cmdNULL;
+//	}
 	return false;
 }
 

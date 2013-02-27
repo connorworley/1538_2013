@@ -6,6 +6,13 @@
 class Arm
 {
 	private:
+		enum LockStates
+		{
+			UNLOCKED = 0,
+			UNLOCKING,
+			LOCKED,
+		};
+		
 		const float PID_P;
 		const float PID_D;
 	
@@ -17,6 +24,10 @@ class Arm
 		float m_Setpoint;
 		float m_PreviousError;
 		float m_RawValue;
+		
+		double m_LockTimer;
+		
+		LockStates m_LockState;
 	
 	public:
 		Arm(int motorApwm, int motorBpwm, int potPwm, int lockSolenoid);

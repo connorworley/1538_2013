@@ -1,22 +1,23 @@
 //=============================================================================
 // File: OperatorController.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
-// All rights reserved.  Cow proprietary and confidential.
+// COPYRIGHT 2013 The Holy Cows (1538)
+// All rights reserved.  1538 proprietary and confidential.
 //             
-// The party receiving this software directly from Cow (the "Recipient")
+// The party receiving this software directly from 1538 (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// Cow(the "Agreement").  The software may be used in source code form
+// 1538 (the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. Cow retains all ownership rights in and to
+// the Recipient to its users. 1538 retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
+
 #include "OperatorController.h"
 #include "WPILib.h"
 #include "../CowLib.h"
@@ -52,16 +53,24 @@ void OperatorController::handle()
 	{
 		armStick = 0;
 	}
-	armStick /= 300.0f;
+	armStick /= 100.0f;
 	float armValue = armStick - (m_PreviousArmStick - armStick);
 	bot->GetArm()->SetSetpoint(bot->GetArm()->GetSetpoint() + armValue);
 	
 	if(cb->getOperatorButton(2))
 	{
-		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND);
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition"));
 		bot->GetIntake()->SetRaw(-1);
 	}
-	else 
+	else if(cb->getOperatorButton(1))
+	{
+		bot->GetIntake()->SetRaw(-1);
+	}
+	else if(cb->GetOperatorArmButton(6))
+	{
+		bot->GetIntake()->SetRaw(1);
+	}
+	else
 	{
 		bot->GetIntake()->SetRaw(0);
 	}
@@ -72,20 +81,21 @@ void OperatorController::handle()
 		bot->GetShooter()->SetRaw(0);
 	
 	if(cb->getOperatorButton(5))
-		bot->GetFeeder()->SetRaw(-0.5);
+		bot->GetFeeder()->SetRaw(-1);
 	else 
 		bot->GetFeeder()->SetRaw(0);
 	
 	if(cb->getOperatorButton(8))
-		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.302);
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmHighPosition"));
 	if(cb->getOperatorButton(9))
-		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.24);
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmMidPosition"));
 	if(cb->getOperatorButton(7))
-		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 1.194);
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmLowPosition"));
 	if(cb->getSteeringButton(3))
-		bot->GetArm()->SetSetpoint(ARM_SETPOINT_GROUND - 0.04);
-	if(cb->getOperatorButton(1))
-		bot->GetArm()->SetSetpoint(ARM_SETPOINT_STARTING_POSITION);
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition") - 0.3);
+	if(cb->getDriveButton(1))
+		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmStartingPosition"));
+	
 	if(!cb->getOperatorButton(3) && !cb->getOperatorButton(4))
 		bot->GetArm()->Lock(0);
 	else
