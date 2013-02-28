@@ -79,9 +79,7 @@ class CowRobot
 	
 private:
 	SmartDashboard* m_SmartDashboard;
-	
-	void HandleShifting();
-	
+		
 	// Drive Motors
 	Talon *m_RightDrive;
 	Talon *m_LeftDrive;
