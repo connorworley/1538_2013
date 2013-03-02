@@ -98,9 +98,12 @@ void CowRobot::Handle()
 	m_Intake->Handle();
 	m_Feeder->Handle();
 	m_Shooter->Handle();
+<<<<<<< HEAD
 	
 	//printf("%f, %f\r\n",  m_Encoder->GetDistance(), m_Gyro->GetAngle());
 	//printf("%f\n", m_Gyro->GetAngle());
+=======
+>>>>>>> 9f1a2f5502f4548ae0b0e667bdea23300f9e8b11
 }
 
 /// Allows skid steer robot to be driven using tank drive style inputs
@@ -172,61 +175,26 @@ Gyro * CowRobot::GetGyro()
 	return m_Gyro;
 }
 
-/// Shifts drive gears. 
-/// @param shifterPosition
-void CowRobot::Shift(ShifterStates shifterPosition)
-{
-	bool solA = false;
-	ShifterStates nextShiftState = m_CurrentShiftState;
-	// It takes lots of logic to shift this year
-	switch (m_CurrentShiftState)
-	{
-	case SHIFTER_STATE_HIGH:
-		solA = false;
-		m_ShifterCounts = 0;
-		
-		nextShiftState = SHIFTER_STATE_LOW;
-		break;
-
-	case SHIFTER_STATE_LOW:
-		solA = true;
-		m_ShifterCounts = 0;
-		
-		nextShiftState = SHIFTER_STATE_HIGH;
-		break;
-	default:
-		nextShiftState = SHIFTER_STATE_HIGH;
-		break;
-	}
-
-	m_Shifter->Set(solA);
-
-	if (m_CurrentShiftState != nextShiftState)
-	{
-		m_LeftDrive->Set(0);
-		m_RightDrive->Set(0);
-		Wait(0.125);
-	}
-
-	m_CurrentShiftState = nextShiftState;
-}
-
 void CowRobot::AskForShift(ShifterStates shifterState)
 {
 	if(shifterState != m_CurrentShiftState)
 	{
-		Shift(m_CurrentShiftState);
+		m_ShifterTimer = Timer::GetFPGATimestamp();
+		m_Shifter->Set(shifterState);
+		m_CurrentShiftState = shifterState;
 	}
-	m_CurrentShiftState = shifterState;
 }
 
 /// sets the left side motors
 void CowRobot::SetLeftMotors(float val)
 {
 	if (val > 1.0)
-		val = 1.00;
+		val = 1.0;
 	if (val < -1.0)
 		val = -1.0;
+
+	if((Timer::GetFPGATimestamp() - m_ShifterTimer) <= 0.125)
+		val = 0;
 
 	m_LeftDrive->SetSpeed(-val);
 }
@@ -235,9 +203,12 @@ void CowRobot::SetLeftMotors(float val)
 void CowRobot::SetRightMotors(float val)
 {
 	if (val > 1.0)
-		val = 1.00;
+		val = 1.0;
 	if (val < -1.0)
 		val = -1.0;
+
+	if((Timer::GetFPGATimestamp() - m_ShifterTimer) <= 0.125)
+		val = 0;
 
 	m_RightDrive->SetSpeed(val);
 }
