@@ -26,7 +26,7 @@ class Roller
 		
 		bool m_Fired;
 		
-		ReederStates m_State;
+		FeederStates m_State;
 	
 	public:
 		Roller(int motorApwm, int motorBpwm);

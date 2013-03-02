@@ -98,12 +98,9 @@ void CowRobot::Handle()
 	m_Intake->Handle();
 	m_Feeder->Handle();
 	m_Shooter->Handle();
-<<<<<<< HEAD
 	
 	//printf("%f, %f\r\n",  m_Encoder->GetDistance(), m_Gyro->GetAngle());
 	//printf("%f\n", m_Gyro->GetAngle());
-=======
->>>>>>> 9f1a2f5502f4548ae0b0e667bdea23300f9e8b11
 }
 
 /// Allows skid steer robot to be driven using tank drive style inputs

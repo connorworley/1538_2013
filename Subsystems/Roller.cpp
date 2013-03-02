@@ -13,7 +13,7 @@ Roller::Roller(int motorApwm, int motorBpwm) :
 	m_DebounceTime(0),
 	m_PreviousState(false),
 	m_Fired(false),
-	m_State(STAGED)
+	m_State(FIRING)
 {
 	m_MotorA = new Talon(motorApwm);
 	m_MotorB = new Talon(motorBpwm);
@@ -40,7 +40,7 @@ void Roller::Handle()
 		case FIRING:
 			if(!GetLimitSwitch())
 			{
-				m_State = COOLDOWN;
+				m_State = FIRED;
 				m_MotorA->Set(0);
 				m_MotorB->Set(0);
 				SetTimeWaitTrigger(Timer::GetFPGATimestamp());
