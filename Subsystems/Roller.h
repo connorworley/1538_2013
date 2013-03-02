@@ -5,9 +5,8 @@
 
 typedef enum {
 	STAGING,
-	STAGED,
-	COOLDOWN,
-	OFF
+	FIRING,
+	FIRED
 } FeederStates;
 
 class Roller
