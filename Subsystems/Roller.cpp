@@ -31,7 +31,8 @@ void Roller::Handle()
 				m_State = FIRING;
 				m_MotorA->Set(0);
 				m_MotorB->Set(0);
-			} else
+			} 
+			else
 			{
 				m_MotorA->Set(m_RawValue * 0.3);
 				m_MotorB->Set(m_RawValue * 0.3);
@@ -43,8 +44,9 @@ void Roller::Handle()
 				m_State = FIRED;
 				m_MotorA->Set(0);
 				m_MotorB->Set(0);
-				SetTimeWaitTrigger(Timer::GetFPGATimestamp());
-			} else if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout)
+				m_TriggerTime = Timer::GetFPGATimestamp();
+			} 
+			else if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout)
 			{
 				m_MotorA->Set(m_RawValue);
 				m_MotorB->Set(m_RawValue);
@@ -55,48 +57,12 @@ void Roller::Handle()
 			m_State = STAGING;
 			break;
 		}
-	} else
+	} 
+	else
 	{
 		m_MotorA->Set(m_RawValue);
 		m_MotorB->Set(m_RawValue);
 	}
-//	if(m_WaitOnTrigger)
-//	{
-//		if(m_Fired)
-//		{
-//			if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout)
-//			{
-//				m_Fired = false;
-//			}
-//			else
-//			{
-//				m_MotorA->Set(0);
-//				m_MotorB->Set(0);
-//				cout << "Waiting to fire" << endl;
-//			}
-//		}
-//		else
-//		{
-//			cout << "Firing" << endl;
-//			m_MotorA->Set(m_RawValue);
-//			m_MotorB->Set(m_RawValue);
-//			
-//			if(!GetLimitSwitch() && m_PreviousState == true)
-//			{
-//				m_Fired = true;
-//				m_TriggerTime = Timer::GetFPGATimestamp();
-//				cout << "fired" << endl;
-//			}
-//		}
-//	}
-//	else
-//	{
-//		m_MotorA->Set(m_RawValue);
-//		m_MotorB->Set(m_RawValue);
-//	}
-//	
-//	if(m_LimitSwitch)
-//		m_PreviousState = m_LimitSwitch->Get();
 }
 
 void Roller::CreateLimitSwitch(int port, float waittime, float debouncetime)
