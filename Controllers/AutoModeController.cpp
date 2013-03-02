@@ -75,7 +75,7 @@ void AutoModeController::reset()
 	bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
 }
 
-bool AutoModeController::handle()
+void AutoModeController::handle()
 {
 	bool result = false;
 	bool thisIsNull = false;
@@ -85,15 +85,39 @@ bool AutoModeController::handle()
 	{
 		case CMD_DRIVE:
 			result = driveDistanceWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading);
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			break;
 		case CMD_DRIVE_DIST:
 			result = driveDistancePWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading);
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			break;
 		case CMD_TURN:
 			result = turnHeading(curCmd.m_Heading);
 			bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
 			bot->GetEncoder()->Reset();
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 
+			break;
+			
+		case CMD_SHOOTINPLACE:
+			result = false;
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			break;
 		case CMD_NULL:
 			thisIsNull = true;
@@ -131,6 +155,9 @@ bool AutoModeController::handle()
 void AutoModeController::doNothing()
 {
 	bot->DriveLeftRight(0,0);
+	bot->GetShooter()->SetRaw(0);
+	bot->GetFeeder()->SetRaw(0);
+	bot->GetIntake()->SetRaw(0);
 	//bot->getArm()->SetMotor(0);
 	//bot->getArm()->
 }
@@ -177,20 +204,24 @@ bool AutoModeController::driveDistanceWithHeading(cmdArg distance, cmdArg headin
 
 bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg heading)
 {
-	float distanceP = distance - bot->GetEncoder()->GetRaw();
-	float currentDistance = bot->GetEncoder()->GetRaw();
+	float distanceP = distance - bot->GetEncoder()->GetDistance();
+	float currentDistance = bot->GetEncoder()->GetDistance();
 	float currentHeading = bot->GetGyro()->GetAngle();
+	//float currentHeading = 0;
 	float turn = heading - bot->GetGyro()->GetAngle();
 		
-	distanceP *= 0.005;
-	turn /= 100;
+	distanceP *= 0.03;
+	turn /= 100.0;
 	
-	printf("%f, %d\r\n", distanceP, bot->GetEncoder()->GetRaw());
+	distanceP = LimitMix(-distanceP)* 0.8;
+	turn = LimitMix(turn*5);
+	printf("%f, %f, %f\r\n", distanceP, bot->GetEncoder()->GetDistance(), turn);
 		
-	bot->DriveSpeedTurn(LimitMix(-distanceP) * 0.9, LimitMix(-turn)*1.3, true);
+	bot->DriveSpeedTurn(distanceP, turn , true);
 //	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
 
-	if((currentDistance < distance + 40 && currentDistance > distance - 40) &&
+	if((currentDistance < distance + 0.25 && currentDistance > distance - 0.25) &&
+		bot->GetEncoder()->GetRate() < 15 &&
 	   (currentHeading < heading + 1 && currentHeading > heading -1))
 	{
 		printf("Done with distance\r\n");

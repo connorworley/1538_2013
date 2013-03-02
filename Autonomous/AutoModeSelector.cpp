@@ -22,15 +22,15 @@
 #include "../CowConstants.h"
 #include <string>
 
-void AutoModeSelector::increment()
+void AutoModeSelector::Increment()
 {
-	index++;
-	if(index == amLast)
-		index = amFirst + 1;
-	printf("Auto mode selected: %d\r\n",index);
+	m_Index++;
+	if(m_Index == amLast)
+		m_Index = amFirst + 1;
+	printf("Auto mode selected: %d\r\n",m_Index);
 }
 
-string AutoModeSelector::description()
+string AutoModeSelector::Description()
 {
 	char str[25];
 	memset(str, '.', 25);
@@ -47,14 +47,22 @@ string AutoModeSelector::description()
 	
 	*/
 	
-	switch (index)
+	switch (m_Index)
 	{
-	case am3Disc:
-		sprintf(str,"3 Disc                   ");
+	case am3DiscHighSide:
+		sprintf(str,"3 Disc, High, Side       ");
+		s.assign(str);
+		break;
+	case am3DiskHighCenter:
+		sprintf(str,"3 Disc, High, Center     ");
 		s.assign(str);
 		break;
 	case am7DiskFront:
 		sprintf(str,"7 Disc Front             ");
+		s.assign(str);
+		break;
+	case amDriveStraight:
+		sprintf(str,"Drive Straight (Testing) ");
 		s.assign(str);
 		break;
 	case amDoNothing:
@@ -63,7 +71,7 @@ string AutoModeSelector::description()
 		break;
 	default:
 		sprintf(str,"It broke                 ");
-		index = amFirst + 1;
+		m_Index = amFirst + 1;
 		s.assign(str);
 		break;
 	}
@@ -71,24 +79,47 @@ string AutoModeSelector::description()
 	return s;
 }
 
-void AutoModeSelector::writeToAutoModeController(AutoModeController * autoController)
+void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoController)
 {
 	// addCommand(TYPE, DRIVE COUNTS, HEADING, SHOOTER, ARM PISTON STATE, INTAKE, CHUTE, WANTED # BALLS SHOT, TIMEOUT)
 	
+	
+//	m_Command(CMD_NULL),
+//	m_EncoderCount(0),
+//	m_Heading(0),
+//	m_Shooter(0),
+//	m_ArmSetpoint(0),
+//	m_Intake(0),
+//	m_Timeout(0)
 	autoController->reset();
-	switch(index)
+	switch(m_Index)
 	{
-	case am3Disc:
+	case am3DiscHighSide:
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::ThreePointDiagonal , 0, 0, 1.5));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::ThreePointDiagonal , 0, -1, 0.75));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::ThreePointDiagonal , 0, 0, 0.625));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::ThreePointDiagonal , 0, -1, 0.75));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::ThreePointDiagonal , 0, 0, 0.625));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::ThreePointDiagonal , 0, -1, 5));
 		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
 		break;
 	case am7DiskFront:
 		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
 		break;
+	case amDriveStraight:
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -26, 0, 0, Arm::NEAR, 0, 0, 2));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -10, 0, 1, Arm::NEAR, 0, 0, 2));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::NEAR , 0, -1, 0.75));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::NEAR , 0, 0, 0.625));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::NEAR , 0, -1, 0.75));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::NEAR , 0, 0, 0.625));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::NEAR , 0, -1, 5));		
+		break;
 	case amDoNothing:
 
 		break;
 	default:
-		index = amFirst + 1;
+		m_Index = amFirst + 1;
 		break;
 	}
 	

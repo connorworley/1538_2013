@@ -37,22 +37,24 @@ class AutoModeSelector
 public:
 	enum AutoModes{
 		amFirst = 0,
-		am3Disc,
+		am3DiscHighSide,
+		am3DiskHighCenter,
 		am7DiskFront,
+		amDriveStraight,
 		amDoNothing,
 		amLast
 	};	
 	
-	void increment();
+	void Increment();
 	
 	// Get a description of this auto mode
-	string description();
-	void writeToAutoModeController(AutoModeController * ac);
+	string Description();
+	void WriteToAutoModeController(AutoModeController * ac);
 	
 	
 private:
-	int index;
-	int secIndex;
+	int m_Index;
+	int m_SecIndex;
 };
 
 #endif

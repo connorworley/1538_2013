@@ -25,6 +25,7 @@
 #include "../CowRobot.h"
 #include "../Declarations.h"
 #include "../CowConstants.h"
+#include "../Subsystems/Arm.h"
 
 // Constructor
 // TODO: We might not need to pass in Joysticks, if they come from the ControlBoard
@@ -59,12 +60,12 @@ void OperatorController::handle()
 	
 	if(cb->getOperatorButton(2))
 	{
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition"));
+		bot->GetArm()->SetState(Arm::GROUND);
 		bot->GetIntake()->SetRaw(-1);
 	}
 	else if(cb->getOperatorButton(1))
 	{
-		bot->GetIntake()->SetRaw(-1);
+		bot->GetIntake()->SetRaw(-0.8);
 	}
 	else if(cb->GetOperatorArmButton(6))
 	{
@@ -81,24 +82,29 @@ void OperatorController::handle()
 		bot->GetShooter()->SetRaw(0);
 	
 	if(cb->getOperatorButton(5))
+	{
 		bot->GetFeeder()->SetRaw(-1);
+		bot->GetEncoder()->Reset();
+		bot->GetGyro()->Reset();
+	}
 	else 
 		bot->GetFeeder()->SetRaw(0);
 	
 	if(cb->getOperatorButton(8))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmHighPosition"));
+		bot->GetArm()->SetState(Arm::FAR);
 	if(cb->getOperatorButton(9))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmMidPosition"));
+		bot->GetArm()->SetState(Arm::MIDDLE);
 	if(cb->getOperatorButton(7))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmLowPosition"));
+		bot->GetArm()->SetState(Arm::NEAR);
 	if(cb->getSteeringButton(3))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition") - 0.19);
+		bot->GetArm()->SetState(Arm::CRASH_PAD);
 	if(cb->getSteeringButton(1))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmApproachHang"));
+		bot->GetArm()->SetState(Arm::APPROACH);
 	if(cb->getSteeringButton(4))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition"));
+		bot->GetArm()->SetState(Arm::HANG);
 	if(cb->getDriveButton(1))
-		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmStartingPosition"));
+		bot->GetArm()->SetState(Arm::STARTING_POS);
+	
 	
 	if(!cb->getOperatorButton(3) && !cb->getOperatorButton(4))
 		bot->GetArm()->Lock(0);

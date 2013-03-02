@@ -10,7 +10,9 @@ Arm::Arm(int motorApwm, int motorBpwm, int potPwm, int lockSolenoid) :
 	PID_D(1),
 	m_PreviousError(0),
 	m_RawValue(0),
-	m_LockState(LOCKED)
+	m_LockState(LOCKED),
+	m_ArmState(STARTING_POS),
+	m_ArmSpeed(LOW)
 {
 	m_MotorA = new Talon(motorApwm);
 	m_MotorB = new Talon(motorBpwm);
@@ -25,18 +27,12 @@ void Arm::Handle()
 	float error = m_Setpoint - m_Pot->GetVoltage();
 	float errorChange = error - m_PreviousError;
 	float output = (error * PID_P) + (errorChange * PID_D);
-	if(output > 0.5 &&
-		m_Setpoint >= CowConstants::getInstance()->getValueForKey("ArmGroundPosition"))
+	
+	
+	if(error < 0.2 && error > -0.2)
 	{
-		output = 0.5;
-	}
-	if(output > 0.8)
-	{
-		output = 0.8;
-	}
-	if(output < -0.8)
-	{
-		output = -0.8;
+		m_ArmState = m_WantedArmState;
+		//printf("Arrived at new state\n");
 	}
 	
 	if(m_LockState == UNLOCKING  && (Timer::GetFPGATimestamp() - m_LockTimer) > 0.5)
@@ -47,6 +43,15 @@ void Arm::Handle()
 	// 0.15 = -1.2%
 	if(m_LockState == UNLOCKED)
 	{
+		if(m_ArmSpeed == FULL)
+			output = CowLib::LimitMix(output, 1.0);
+		else if(m_ArmSpeed == MED)
+			output = CowLib::LimitMix(output, 0.8);
+		else if(m_ArmSpeed == LOW)
+			output = CowLib::LimitMix(output, 0.3);
+		else if(m_ArmSpeed == OFF)
+			output = CowLib::LimitMix(output, 0);
+		
 		if((m_Setpoint > CowConstants::getInstance()->getValueForKey("ArmGroundPosition") + 0.01 && output > 0 && m_Setpoint != CowConstants::getInstance()->getValueForKey("ArmFinishHang"))|| m_Pot->GetVoltage() < 1)
 		{
 			output = 0;
@@ -65,7 +70,32 @@ void Arm::Handle()
 		m_MotorA->Set(0);
 		m_MotorB->Set(0);
 	}
-	printf("%f\t\t%f\t\t%f\n", m_Setpoint, m_Pot->GetVoltage(), output);
+	//printf("%f\t\t%f\t\t%f\n", m_Setpoint, m_Pot->GetVoltage(), output);
+//	if(m_ArmState == STARTING_POS)
+//		cout << "STARTING POS";
+//	if(m_ArmState == FAR)
+//		cout << "FAR";
+//	if(m_ArmState == MIDDLE)
+//		cout << "MIDDLE";
+//	if(m_ArmState == NEAR)
+//		cout << "NEAR";
+//	if(m_ArmState == APPROACH)
+//		cout << "APPR";
+//	if(m_ArmState == HANG)
+//		cout << "HANG";
+//	if(m_ArmState == GROUND)
+//		cout << "GND";
+//	if(m_ArmState == CRASH_PAD)
+//		cout << "CRASH";
+//	
+////	if(m_ArmSpeed == FULL)
+////		cout << "FULL";
+////	else if(m_ArmSpeed == MED)
+////		cout << "MED";
+////	else if(m_ArmSpeed == LOW)
+////		cout << "LOW";
+////	
+//	cout << endl;
 	m_PreviousError = error;
 }
 
@@ -93,6 +123,89 @@ void Arm::Lock(bool value)
 		m_LockState = UNLOCKING;
 		m_LockTimer = Timer::GetFPGATimestamp();
 	}	
+}
+
+void Arm::SetState(ArmStates armState)
+{
+	if(armState == STARTING_POS)
+	{
+		m_ArmSpeed = MED;
+	}
+	else if(armState == FAR || armState == MIDDLE || armState == NEAR || armState == FEEDER)
+	{
+		if(m_ArmState == STARTING_POS)
+			m_ArmSpeed = LOW;
+		else if(m_ArmState == FAR || m_ArmState == MIDDLE || m_ArmState == NEAR)
+			m_ArmSpeed = MED;
+		else if(m_ArmState == GROUND || m_ArmState == CRASH_PAD)
+			m_ArmSpeed = FULL;
+		else
+			m_ArmSpeed = MED;
+	}
+	else if(armState == APPROACH)
+	{
+		if(m_ArmState == FAR || m_ArmState == MIDDLE || m_ArmState == NEAR || m_ArmState == STARTING_POS)
+		{
+			m_ArmSpeed = MED;
+		}
+		else if(m_ArmState == GROUND || m_ArmState == CRASH_PAD)
+		{
+			m_ArmSpeed = FULL;
+		}
+	}
+	else if(armState == HANG)
+	{
+		m_ArmSpeed = FULL;
+	}
+	else if(armState == GROUND || armState == CRASH_PAD)
+	{
+		if(m_ArmState == GROUND || m_ArmState == CRASH_PAD || m_ArmState == APPROACH)
+			m_ArmSpeed = FULL;
+		else if(m_ArmState == FAR || m_ArmState == MIDDLE || m_ArmState == NEAR || m_ArmState == STARTING_POS)
+			m_ArmSpeed = MED;
+		else
+			m_ArmSpeed = LOW;
+	}
+	else if(armState == CRASH_PAD)
+	{
+		if(m_ArmState == GROUND)
+			m_ArmSpeed = FULL;
+	}
+	m_WantedArmState = armState;
+	
+	
+	
+//	if(cb->getOperatorButton(9))
+//		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmMidPosition"));
+//	if(cb->getOperatorButton(7))
+//		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmLowPosition"));
+//	if(cb->getSteeringButton(3))
+//		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition") - 0.19);
+//	if(cb->getSteeringButton(1))
+//		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmApproachHang"));
+//	if(cb->getSteeringButton(4))
+//		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition"));
+//	if(cb->getDriveButton(1))
+//		bot->GetArm()->SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmStartingPosition"));
+//	
+	if(armState == STARTING_POS)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmStartingPosition"));
+	else if(armState == FAR)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmHighPosition"));
+	else if(armState == MIDDLE)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmMidPosition"));
+	else if(armState == NEAR)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmLowPosition"));
+	else if(armState == FEEDER)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmFeederPosition"));
+	else if(armState == GROUND)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition"));
+	else if(armState == CRASH_PAD)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmCrashPadPosition"));
+	else if(armState == APPROACH)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmApproachHang"));
+	else if(armState == HANG)
+		SetSetpoint(CowConstants::getInstance()->getValueForKey("ArmGroundPosition"));
 }
 
 Arm::~Arm()

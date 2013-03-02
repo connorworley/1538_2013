@@ -24,10 +24,6 @@
 #include "Controllers/AutoModeController.h"
 #include "Autonomous/AutoModeSelector.h"
 #include "CowConstants.h"
-
-static bool wroteOnce = false;
-
-
 #include <sys/stat.h>
 
 // Uncomment this to make the camera work
@@ -71,7 +67,7 @@ public:
 		opController = new OperatorController();
 		autoController = AutoModeController::getInstance();
 		autoSelector = new AutoModeSelector();
-		autoSelector->increment();
+		autoSelector->Increment();
 //		autoSelector->incrementSecondary();	
 	}
 	void RobotInit(void) {	
@@ -91,7 +87,7 @@ public:
 		
 		//constants->restoreData();
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
 		PrintToLCD::finalizeUpdate();
 		autoIndex = 1;
 	}
@@ -100,7 +96,7 @@ public:
 		printf("In auto init\r\n");
 		//constants->restoreData();
 		autoController->reset();
-		autoSelector->writeToAutoModeController(autoController);
+		autoSelector->WriteToAutoModeController(autoController);
 		CowRobot::GetInstance()->GetEncoder()->Reset();
 		CowRobot::GetInstance()->GetGyro()->Reset();
 		
@@ -127,23 +123,23 @@ public:
 //		autoController->reset();	
 		if( opController->cb->getButtonAutoSelect())
 		{
-			autoSelector->increment();
+			autoSelector->Increment();
 		}
 //
 //
 //		//Print it
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
 		PrintToLCD::finalizeUpdate();
 //		//sendIOPortData();
 	}
 	void AutonomousPeriodic(void) {
 		//bot->getServer()->handle();
-//		autoController->handle();
-//		bot->Handle();
+		autoController->handle();
+		bot->Handle();
 //		
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
 		PrintToLCD::finalizeUpdate();
 		
 		//sendIOPortData();
@@ -153,7 +149,7 @@ public:
 		opController->handle();
 		bot->Handle();
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-		PrintToLCD::print(true, 2, 1, autoSelector->description().c_str());
+		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
 //		PrintToLCD::print(true, 3, 1, "K:%2f", constants->getValueForKey("shooterKey"));
 //		PrintToLCD::finalizeUpdate();
 ////		

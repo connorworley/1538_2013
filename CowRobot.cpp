@@ -52,6 +52,8 @@ CowRobot::CowRobot()
 	m_Arm = new Arm(ARM_A, ARM_B, ARM_POT, ARMLOCK_SOLENOID_CHAN);
 	m_Intake = new Roller(INTAKE_A, INTAKE_B);
 	m_Feeder = new Roller(FEEDER_A, FEEDER_B);
+	m_Feeder->CreateLimitSwitch(3, 1, 0.25);
+	
 	m_Shooter = new Roller(SHOOTER_A, SHOOTER_B);
 
 	//Solenoids
@@ -59,12 +61,12 @@ CowRobot::CowRobot()
 
 	// Set up encoders
 	m_Encoder = new Encoder(LEFT_ENCODER_A_CHAN, LEFT_ENCODER_B_CHAN, true, CounterBase::k1X);
-	m_Encoder->SetDistancePerPulse(0.1007081038552321);
-	m_Encoder->SetReverseDirection(false);
+	m_Encoder->SetDistancePerPulse(0.04908734375);
+	m_Encoder->SetReverseDirection(true);
 	m_Encoder->Start();
 
 	m_Gyro = new Gyro(2);
-	m_Gyro->SetSensitivity(0.0005); //Kiets
+	m_Gyro->SetSensitivity(0.007); //Kiets
 	m_Gyro->Reset();
 
 	velTimer = new Timer();
@@ -97,6 +99,8 @@ void CowRobot::Handle()
 	m_Feeder->Handle();
 	m_Shooter->Handle();
 	
+	//printf("%f, %f\r\n",  m_Encoder->GetDistance(), m_Gyro->GetAngle());
+	//printf("%f\n", m_Gyro->GetAngle());
 }
 
 /// Allows skid steer robot to be driven using tank drive style inputs

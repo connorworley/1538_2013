@@ -23,6 +23,7 @@
 #include "../CowRobot.h"
 #include "../CowLib.h"
 #include "../CowConstants.h"
+#include "../Subsystems/Arm.h"
 
 using namespace CowLib;
 
@@ -32,7 +33,7 @@ typedef float cmdArg;
 typedef enum RobotCommandNames_e
 {
 	CMD_NULL = 0,
-	CMD_AUTOAIM,
+	CMD_SHOOTINPLACE,
 	CMD_DRIVE,
 	CMD_DRIVE_DIST,
 	CMD_WAIT,
@@ -47,20 +48,22 @@ public:
 	m_EncoderCount(0),
 	m_Heading(0),
 	m_Shooter(0),
-	m_ArmSetpoint(0),
+	m_ArmSetpoint(Arm::STARTING_POS),
 	m_Intake(0),
+	m_Feeder(0),
 	m_Timeout(0)
 	{
 		
 	}
 	
-	RobotCommand(RobotCommandNames_e cmd, long encoder, float heading, float shooter, float armsetpoint, float intake, float timeout):
+	RobotCommand(RobotCommandNames_e cmd, long encoder, float heading, float shooter, Arm::ArmStates armsetpoint, float intake, float feeder, float timeout):
 	m_Command(cmd),
 	m_EncoderCount(encoder),
 	m_Heading(heading),
 	m_Shooter(shooter),
 	m_ArmSetpoint(armsetpoint),
 	m_Intake(intake),
+	m_Feeder(feeder),
 	m_Timeout(timeout)
 	{
 		
@@ -72,8 +75,9 @@ public:
 	long m_EncoderCount;
 	float m_Heading;
 	float m_Shooter;
-	float m_ArmSetpoint;
+	Arm::ArmStates m_ArmSetpoint;
 	float m_Intake;
+	float m_Feeder;
 	float m_Timeout;
 };
 
@@ -103,7 +107,7 @@ public:
 	
 	void addCommand(RobotCommand cmd);
 
-	bool handle();
+	void handle();
 	void reset();
 	
 };

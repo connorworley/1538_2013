@@ -5,12 +5,46 @@
 
 class Arm
 {
+	public:
+		enum ArmStates
+		{
+			STARTING_POS = 0,
+			FAR,
+			MIDDLE,
+			NEAR,
+			FEEDER,
+			APPROACH,
+			HANG,
+			GROUND,
+			CRASH_PAD,
+			ThreePointDiagonal,
+			STATE_COUNT // Make sure this is always last
+		};
+		Arm(int motorApwm, int motorBpwm, int potPwm, int lockSolenoid);
+		void Handle();
+		float Arm::GetSetpoint();
+		void SetSetpoint(float value);
+		void SetRaw(float value);
+		void SetState(ArmStates armState);
+		void Lock(bool value);
+		
+		~Arm();
 	private:
 		enum LockStates
 		{
 			UNLOCKED = 0,
 			UNLOCKING,
 			LOCKED,
+		};
+		
+
+		
+		enum ArmSpeeds
+		{
+			FULL = 0,
+			MED,
+			LOW,
+			OFF
 		};
 		
 		const float PID_P;
@@ -20,6 +54,8 @@ class Arm
 		Talon* m_MotorB;
 		AnalogChannel* m_Pot;
 		Solenoid* m_Lock;
+		
+		ArmStates m_ArmStateLookup[STATE_COUNT][STATE_COUNT];
 			
 		float m_Setpoint;
 		float m_PreviousError;
@@ -28,15 +64,9 @@ class Arm
 		double m_LockTimer;
 		
 		LockStates m_LockState;
-	
-	public:
-		Arm(int motorApwm, int motorBpwm, int potPwm, int lockSolenoid);
-		void Handle();
-		float Arm::GetSetpoint();
-		void SetSetpoint(float value);
-		void SetRaw(float value);
-		void Lock(bool value);
+		ArmStates m_WantedArmState;
+		ArmStates m_ArmState;
+		ArmSpeeds m_ArmSpeed;
 		
-		~Arm();
 };
 #endif
