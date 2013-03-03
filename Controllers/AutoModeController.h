@@ -28,15 +28,15 @@
 using namespace CowLib;
 
 // What type of argument?
-typedef float cmdArg;
 
 typedef enum RobotCommandNames_e
 {
 	CMD_NULL = 0,
 	CMD_SHOOTINPLACE,
-	CMD_DRIVE,
 	CMD_DRIVE_DIST,
+	CMD_DRIVE_HOLD_DIST,
 	CMD_WAIT,
+	CMD_ARM,
 	CMD_TURN
 }RobotCommandNames_e;
 
@@ -47,23 +47,27 @@ public:
 	m_Command(CMD_NULL),
 	m_EncoderCount(0),
 	m_Heading(0),
+	m_Throttle(0),
 	m_Shooter(0),
 	m_ArmSetpoint(Arm::STARTING_POS),
 	m_Intake(0),
 	m_Feeder(0),
+	m_NumberOfDisk(0),
 	m_Timeout(0)
 	{
 		
 	}
 	
-	RobotCommand(RobotCommandNames_e cmd, long encoder, float heading, float shooter, Arm::ArmStates armsetpoint, float intake, float feeder, float timeout):
+	RobotCommand(RobotCommandNames_e cmd, long encoder, float heading, float throttle, float shooter, Arm::ArmStates armsetpoint, float intake, float feeder, unsigned int disk, float timeout):
 	m_Command(cmd),
 	m_EncoderCount(encoder),
 	m_Heading(heading),
+	m_Throttle(throttle),
 	m_Shooter(shooter),
 	m_ArmSetpoint(armsetpoint),
 	m_Intake(intake),
 	m_Feeder(feeder),
+	m_NumberOfDisk(disk),
 	m_Timeout(timeout)
 	{
 		
@@ -74,10 +78,12 @@ public:
 	RobotCommandNames_e m_Command;
 	long m_EncoderCount;
 	float m_Heading;
+	float m_Throttle;
 	float m_Shooter;
 	Arm::ArmStates m_ArmSetpoint;
 	float m_Intake;
 	float m_Feeder;
+	unsigned int m_NumberOfDisk;
 	float m_Timeout;
 };
 
@@ -98,9 +104,9 @@ private:
 	
 	// do nothing
 	void doNothing();
-	bool driveDistanceWithHeading(cmdArg distance, cmdArg heading);
-	bool driveDistancePWithHeading(cmdArg distance, cmdArg heading);
-	bool turnHeading(cmdArg heading);
+	bool driveDistanceWithHeading(float distance, float heading, float throttle);
+	bool driveDistanceHoldWithHeading(float distance, float heading, float throttle);
+	bool turnHeading(float heading);
 public:
 	AutoModeController();
 	static AutoModeController* getInstance();

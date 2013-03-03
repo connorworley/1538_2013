@@ -41,7 +41,7 @@ OperatorController::OperatorController() :
 void OperatorController::handle()
 {
 	// Drive shifting
-	if( cb->getButtonShifter() )
+	if( !cb->getButtonShifter() )
 		bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
 	else
 		bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
@@ -105,8 +105,12 @@ void OperatorController::handle()
 	if(cb->getDriveButton(1))
 		bot->GetArm()->SetState(Arm::STARTING_POS);
 	
+	if(!cb->getOperatorButton(4))
+		bot->GetFeeder()->SetTimeWaitTrigger(0);
+	else
+		bot->GetFeeder()->SetTimeWaitTrigger(CowConstants::getInstance()->getValueForKey("TimeWaitTrigger"));
 	
-	if(!cb->getOperatorButton(3) && !cb->getOperatorButton(4))
+	if(!cb->getOperatorButton(3))
 		bot->GetArm()->Lock(0);
 	else
 		bot->GetArm()->Lock(1);

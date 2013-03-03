@@ -47,7 +47,7 @@ class CowBase : public IterativeRobot
 public:
 	CowBase(void)	
 	{
-		printf("Cowbase");
+		printf("Constructing CowBase...\n");
 //		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
 //		
 //		struct stat data;
@@ -68,7 +68,7 @@ public:
 		autoController = AutoModeController::getInstance();
 		autoSelector = new AutoModeSelector();
 		autoSelector->Increment();
-//		autoSelector->incrementSecondary();	
+//		autoSelector->incrementSecondary();
 	}
 	void RobotInit(void) {	
 	}

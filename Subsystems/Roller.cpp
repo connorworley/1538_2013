@@ -13,7 +13,8 @@ Roller::Roller(int motorApwm, int motorBpwm) :
 	m_DebounceTime(0),
 	m_PreviousState(false),
 	m_Fired(false),
-	m_State(FIRING)
+	m_State(FIRING),
+	m_FiredDisks(0)
 {
 	m_MotorA = new Talon(motorApwm);
 	m_MotorB = new Talon(motorBpwm);
@@ -34,9 +35,18 @@ void Roller::Handle()
 			} 
 			else
 			{
-				m_MotorA->Set(m_RawValue * 0.3);
-				m_MotorB->Set(m_RawValue * 0.3);
+				if(m_TriggerTimeout == 0)
+				{
+					m_MotorA->Set(m_RawValue);
+					m_MotorB->Set(m_RawValue);	
+				} else
+				{
+					m_MotorA->Set(m_RawValue * 0.2);
+					m_MotorB->Set(m_RawValue * 0.2);
+				}
 			}
+			
+			//cout << "STAGING" << endl;
 			break;
 		case FIRING:
 			if(!GetLimitSwitch())
@@ -46,15 +56,19 @@ void Roller::Handle()
 				m_MotorB->Set(0);
 				m_TriggerTime = Timer::GetFPGATimestamp();
 			} 
-			else if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout)
+			else if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout &&
+					CowRobot::GetInstance()->GetShooter()->GetRaw() != 0)
 			{
 				m_MotorA->Set(m_RawValue);
 				m_MotorB->Set(m_RawValue);
 			}
+			//cout << "FIRING" << endl;
 			break;
 		case FIRED:
 			// Do any special shot counting code
+			//cout << "FIRED" << endl;
 			m_State = STAGING;
+			m_FiredDisks++;
 			break;
 		}
 	} 
@@ -63,6 +77,7 @@ void Roller::Handle()
 		m_MotorA->Set(m_RawValue);
 		m_MotorB->Set(m_RawValue);
 	}
+	
 }
 
 void Roller::CreateLimitSwitch(int port, float waittime, float debouncetime)
@@ -82,13 +97,13 @@ bool Roller::GetLimitSwitch()
 		if(m_LimitSwitch->Get())
 		{
 			if((Timer::GetFPGATimestamp() - m_DebounceTimer) <= m_DebounceTime)
-				return false;
-			return true;
+				return true;
+			return false;
 		}
 		else
 		{
 			SetDebounceTime(Timer::GetFPGATimestamp());
-			return false;
+			return true;
 		}
 	}
 	else
@@ -100,6 +115,11 @@ bool Roller::GetLimitSwitch()
 void Roller::SetRaw(float value)
 {
 	this->m_RawValue = value;
+}
+
+float Roller::GetRaw()
+{
+	return m_RawValue;
 }
 
 Roller::~Roller()

@@ -55,7 +55,9 @@ class Arm
 		AnalogChannel* m_Pot;
 		Solenoid* m_Lock;
 		
-		ArmStates m_ArmStateLookup[STATE_COUNT][STATE_COUNT];
+		ArmSpeeds m_ArmSpeedLookup[STATE_COUNT][STATE_COUNT];
+		void SetupArmSpeed(ArmStates startState, ArmStates endState, ArmSpeeds speed);
+		ArmSpeeds GetArmSpeed(ArmStates startState, ArmStates endState);
 			
 		float m_Setpoint;
 		float m_PreviousError;

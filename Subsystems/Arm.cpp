@@ -14,12 +14,26 @@ Arm::Arm(int motorApwm, int motorBpwm, int potPwm, int lockSolenoid) :
 	m_ArmState(STARTING_POS),
 	m_ArmSpeed(LOW)
 {
+	for(int i = 0; i < STATE_COUNT*STATE_COUNT; i++)
+	{
+		m_ArmSpeedLookup[i / STATE_COUNT][i % STATE_COUNT] = LOW;
+	}
 	m_MotorA = new Talon(motorApwm);
 	m_MotorB = new Talon(motorBpwm);
 	m_Pot = new AnalogChannel(potPwm);
 	m_Setpoint = CowConstants::getInstance()->getValueForKey("ArmStartingPosition");
 	m_Lock = new Solenoid(lockSolenoid);
 	m_LockTimer = 0;
+}
+
+void Arm::SetupArmSpeed(ArmStates startState, ArmStates endState, ArmSpeeds speed)
+{
+	m_ArmSpeedLookup[startState][endState] = speed;
+}
+
+Arm::ArmSpeeds Arm::GetArmSpeed(ArmStates startState, ArmStates endState)
+{
+	return m_ArmSpeedLookup[startState][endState];
 }
 
 void Arm::Handle()
@@ -127,6 +141,29 @@ void Arm::Lock(bool value)
 
 void Arm::SetState(ArmStates armState)
 {
+	/*
+	 * SetupArmSpeed(FAR, MIDDLE, MED);
+	 * SetupArmSpeed(FAR, NEAR, MED);
+	 * SetupArmSpeed(FAR, FEEDER, MED);
+	 * SetupArmSpeed(MIDDLE, FAR, MED);
+	 * SetupArmSpeed(MIDDLE, NEAR, MED);
+	 * SetupArmSpeed(MIDDLE, FEEDER, MED);
+	 * SetupArmSpeed(NEAR, FAR, MED);
+	 * SetupArmSpeed(NEAR, MIDDLE, MED);
+	 * SetupArmSpeed(NEAR, FEEDER, MED);
+	 * SetupArmSpeed(GROUND, FAR, FULL);
+	 * SetupArmSpeed(GROUND, MIDDLE, FULL);
+	 * SetupArmSpeed(GROUND, NEAR, FULL);
+	 * SetupArmSpeed(GROUND, FEEDER, FULL);
+	 * SetupArmSpeed(CRASH_PAD, FAR, FULL);
+	 * SetupArmSpeed(CRASH_PAD, MIDDLE, FULL);
+	 * SetupArmSpeed(CRASH_PAD, NEAR, FULL);
+	 * SetupArmSpeed(CRASH_PAD, FEEDER, FULL);
+	 * SetupArmSpeed(STARTING_POS, APPROACH, FULL);
+	 * SetupArmSpeed(STARTING_POS, GROUND, FULL);
+	 * SetupArmSpeed(STARTING_POS, CRASH_PAD, FULL);
+	 * 
+	 */
 	if(armState == STARTING_POS)
 	{
 		m_ArmSpeed = MED;
@@ -161,8 +198,10 @@ void Arm::SetState(ArmStates armState)
 	{
 		if(m_ArmState == GROUND || m_ArmState == CRASH_PAD || m_ArmState == APPROACH)
 			m_ArmSpeed = FULL;
-		else if(m_ArmState == FAR || m_ArmState == MIDDLE || m_ArmState == NEAR || m_ArmState == STARTING_POS)
+		else if(m_ArmState == FAR || m_ArmState == MIDDLE || m_ArmState == NEAR)
 			m_ArmSpeed = MED;
+		else if(m_ArmState == STARTING_POS)
+			m_ArmSpeed = FULL;
 		else
 			m_ArmSpeed = LOW;
 	}

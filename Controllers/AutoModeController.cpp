@@ -49,7 +49,7 @@ AutoModeController::AutoModeController()
 	reset();
 }
 
-Relay::Value toRelayValue(cmdArg val)
+Relay::Value toRelayValue(float val)
 {
 	if(val == 1.0)
 		return Relay::kForward;
@@ -83,16 +83,16 @@ void AutoModeController::handle()
 	// Run the command
 	switch(curCmd.m_Command)
 	{
-		case CMD_DRIVE:
-			result = driveDistanceWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading);
+		case CMD_DRIVE_DIST:
+			result = driveDistanceWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
 			bot->GetIntake()->SetRaw(curCmd.m_Intake);
 			bot->GetArm()->Lock(true);
 			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			break;
-		case CMD_DRIVE_DIST:
-			result = driveDistancePWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading);
+		case CMD_DRIVE_HOLD_DIST:
+			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
 			bot->GetIntake()->SetRaw(curCmd.m_Intake);
@@ -112,6 +112,23 @@ void AutoModeController::handle()
 			break;
 			
 		case CMD_SHOOTINPLACE:
+			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
+			
+			if(bot->GetFeeder()->GetFiredDisks() == curCmd.m_NumberOfDisk)
+			{
+				result = true;
+				cout << "Shot number of disk " << curCmd.m_NumberOfDisk << endl;
+			}
+			else
+				result = false;
+			break;
+			
+		case CMD_ARM:
 			result = false;
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
@@ -162,7 +179,7 @@ void AutoModeController::doNothing()
 	//bot->getArm()->
 }
 
-bool AutoModeController::turnHeading(cmdArg heading)
+bool AutoModeController::turnHeading(float heading)
 {
 	float pGain = CowConstants::getInstance()->getValueForKey("turnP");
 	
@@ -186,23 +203,7 @@ bool AutoModeController::turnHeading(cmdArg heading)
 		return false;
 }
 
-bool AutoModeController::driveDistanceWithHeading(cmdArg distance, cmdArg heading)
-{
-	float distanceP = distance - bot->GetEncoder()->GetRaw();
-	float turn = heading - bot->GetGyro()->GetAngle();
-		
-	distanceP *= 0.005;
-	turn /= 100;
-	
-	printf("%f, %d\r\n", distanceP, bot->GetEncoder()->GetRaw());
-		
-	bot->DriveSpeedTurn(LimitMix(-distanceP) * 0.9, LimitMix(-turn)*1.3, true);
-//	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
-
-	return false;
-}
-
-bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg heading)
+bool AutoModeController::driveDistanceWithHeading(float distance, float heading, float throttle)
 {
 	float distanceP = distance - bot->GetEncoder()->GetDistance();
 	float currentDistance = bot->GetEncoder()->GetDistance();
@@ -213,9 +214,9 @@ bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg headi
 	distanceP *= 0.03;
 	turn /= 100.0;
 	
-	distanceP = LimitMix(-distanceP)* 0.8;
-	turn = LimitMix(turn*5);
-	printf("%f, %f, %f\r\n", distanceP, bot->GetEncoder()->GetDistance(), turn);
+	distanceP = LimitMix(-distanceP)* 0.5;
+	turn = LimitMix(turn*9);
+	//printf("%f, %f, %f\r\n", distanceP, bot->GetEncoder()->GetDistance(), turn);
 		
 	bot->DriveSpeedTurn(distanceP, turn , true);
 //	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
@@ -229,6 +230,25 @@ bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg headi
 	}	
 	else
 		return false;
+}
+
+bool AutoModeController::driveDistanceHoldWithHeading(float distance, float heading, float throttle)
+{
+	float distanceP = distance - bot->GetEncoder()->GetDistance();
+	float currentDistance = bot->GetEncoder()->GetDistance();
+	float currentHeading = bot->GetGyro()->GetAngle();
+	//float currentHeading = 0;
+	float turn = heading - bot->GetGyro()->GetAngle();
+		
+	distanceP *= 0.03;
+	turn /= 100.0;
+	
+	distanceP = LimitMix(-distanceP) * throttle;
+	turn = LimitMix(turn*9);
+	//printf("%f, %f, %f\r\n", throttle, bot->GetEncoder()->GetDistance(), turn);
+		
+	bot->DriveSpeedTurn(distanceP, turn , true);
+	return false;
 }
 
 

@@ -25,6 +25,7 @@ class Roller
 		bool m_PreviousState;
 		
 		bool m_Fired;
+		unsigned int m_FiredDisks;
 		
 		FeederStates m_State;
 	
@@ -32,6 +33,7 @@ class Roller
 		Roller(int motorApwm, int motorBpwm);
 		void Handle();
 		void SetRaw(float value);
+		float GetRaw();
 		void SetTimeWaitTrigger(float time)
 		{
 			m_TriggerTimeout = time;
@@ -39,6 +41,11 @@ class Roller
 		void SetDebounceTime(float time)
 		{
 			m_DebounceTime = time;
+		}
+		
+		unsigned int GetFiredDisks()
+		{
+			return m_FiredDisks;
 		}
 		
 		void CreateLimitSwitch(int port, float waittime, float debouncetime);
