@@ -67,13 +67,13 @@ namespace CowLib
 			if(!m_Latched && currentState)
 			{
 				m_Latched = currentState;
-				return m_Latched;
+				return true;
 			}
 			else
 			{
 				m_Latched = false;
-				return m_Latched;
 			}
+			return false;
 		}
 	private:
 		bool m_Latched;
