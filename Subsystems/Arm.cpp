@@ -62,7 +62,7 @@ void Arm::Handle()
 		else if(m_ArmSpeed == MED)
 			output = CowLib::LimitMix(output, 0.8);
 		else if(m_ArmSpeed == LOW)
-			output = CowLib::LimitMix(output, 0.3);
+			output = CowLib::LimitMix(output, 0.5);
 		else if(m_ArmSpeed == OFF)
 			output = CowLib::LimitMix(output, 0);
 		

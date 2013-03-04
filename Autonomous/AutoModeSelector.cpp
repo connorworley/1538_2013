@@ -49,8 +49,8 @@ string AutoModeSelector::Description()
 	
 	switch (m_Index)
 	{
-	case am3DiscHighSide:
-		sprintf(str,"3 Disc, High, Side       ");
+	case am3DiskNear:
+		sprintf(str,"3 Disc, High, Near       ");
 		s.assign(str);
 		break;
 	case am3DiskHighCenter:
@@ -94,7 +94,7 @@ void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoContro
 	autoController->reset();
 	switch(m_Index)
 	{
-	case am3DiscHighSide:
+	case am3DiskNear:
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -55, 0, 0.5f, 0, Arm::CRASH_PAD, 0, 0, 0, 2.5));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.45f, 0, Arm::CRASH_PAD, 0, 0, 0, 2));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.75));
@@ -104,14 +104,14 @@ void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoContro
 		break;
 	case am7DiskFront:
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -55, 0, 0.5f, 0, Arm::CRASH_PAD, 0, 0, 0, 2.5));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.45f, 0, Arm::CRASH_PAD, 0, 0, 0, 2));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 24, 0, 0.8f, 0, Arm::CRASH_PAD, 0, 0, 0, 2));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.75));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.5));
-		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, -1, 4, 4));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, -1, 3, 4));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 12, 0, 0.5f, 0, Arm::CRASH_PAD, 0, 0, 0, 1.5));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 180, 0, 0.5f, 0, Arm::GROUND, -0.5, 0, 0, 3));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 180, 0, 0.8f, 0, Arm::GROUND, -0.5, 0, 0, 3));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 80, 0, 0.35f, 1, Arm::FAR, -0.5, 0, 0, 4));
-		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 80, 0, 0.8f, 1, Arm::FAR, -0.5, -1, 10, 6));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 80, 0, 0.8f, 1, Arm::FAR, -0.5, -1, 7, 6));
 
 
 		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);

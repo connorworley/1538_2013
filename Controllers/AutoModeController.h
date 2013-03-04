@@ -101,6 +101,7 @@ private:
 	bool extendArm;
 	
 	float previousError;
+	float m_ShotTime;
 	
 	// do nothing
 	void doNothing();

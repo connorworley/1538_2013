@@ -73,6 +73,7 @@ void AutoModeController::reset()
 	cmdList.clear();
 	curCmd = RobotCommand();
 	bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
+	m_ShotTime = 0;
 }
 
 void AutoModeController::handle()
@@ -119,10 +120,16 @@ void AutoModeController::handle()
 			bot->GetArm()->Lock(true);
 			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			
-			if(bot->GetFeeder()->GetFiredDisks() == curCmd.m_NumberOfDisk)
+			if(bot->GetFeeder()->GetFiredDisks() == curCmd.m_NumberOfDisk && m_ShotTime == 0)
+			{
+				cout << "Shot number of disk " << curCmd.m_NumberOfDisk << ", now waiting" << endl;
+				m_ShotTime = Timer::GetFPGATimestamp();
+			}
+			
+			if(Timer::GetFPGATimestamp() - m_ShotTime > 0.25)
 			{
 				result = true;
-				cout << "Shot number of disk " << curCmd.m_NumberOfDisk << endl;
+				m_ShotTime = 0;
 			}
 			else
 				result = false;
@@ -221,8 +228,8 @@ bool AutoModeController::driveDistanceWithHeading(float distance, float heading,
 	bot->DriveSpeedTurn(distanceP, turn , true);
 //	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
 
-	if((currentDistance < distance + 0.25 && currentDistance > distance - 0.25) &&
-		bot->GetEncoder()->GetRate() < 15 &&
+	if(
+		(bot->GetEncoder()->GetRate() < 6 && bot->GetEncoder()->GetRate() > -6) &&
 	   (currentHeading < heading + 1 && currentHeading > heading -1))
 	{
 		printf("Done with distance\r\n");
@@ -235,8 +242,6 @@ bool AutoModeController::driveDistanceWithHeading(float distance, float heading,
 bool AutoModeController::driveDistanceHoldWithHeading(float distance, float heading, float throttle)
 {
 	float distanceP = distance - bot->GetEncoder()->GetDistance();
-	float currentDistance = bot->GetEncoder()->GetDistance();
-	float currentHeading = bot->GetGyro()->GetAngle();
 	//float currentHeading = 0;
 	float turn = heading - bot->GetGyro()->GetAngle();
 		

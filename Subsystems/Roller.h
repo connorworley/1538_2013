@@ -25,9 +25,8 @@ class Roller
 		bool m_PreviousState;
 		
 		bool m_Fired;
-		unsigned int m_FiredDisks;
-		
 		FeederStates m_State;
+		unsigned int m_FiredDisks;
 	
 	public:
 		Roller(int motorApwm, int motorBpwm);
