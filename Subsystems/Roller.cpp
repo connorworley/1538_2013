@@ -39,7 +39,8 @@ void Roller::Handle()
 				{
 					m_MotorA->Set(m_RawValue);
 					m_MotorB->Set(m_RawValue);	
-				} else
+				} 
+				else
 				{
 					m_MotorA->Set(m_RawValue * 0.2);
 					m_MotorB->Set(m_RawValue * 0.2);
