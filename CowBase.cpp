@@ -108,20 +108,17 @@ public:
 	}
 	void DisabledPeriodic(void)  {
 		//bot->getServer()->handle();
-		opController->handle();
+		//opController->handle();
 //		autoController->reset();	
-		cout << "Disabled periodic" << endl;
 		if( opController->cb->getButtonAutoSelect())
 		{
-			cout << "Hit button" << endl;
 			autoSelector->Increment();
 		}
-//
-//
+
 //		//Print it
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-	//	PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
-//		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
+		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
 		PrintToLCD::finalizeUpdate();
 //		//sendIOPortData();
 	}
@@ -131,8 +128,8 @@ public:
 		bot->Handle();
 //		
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-	//	PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
-		//PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
+		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
 		PrintToLCD::finalizeUpdate();
 		
 		//sendIOPortData();
@@ -142,8 +139,8 @@ public:
 		opController->handle();
 		bot->Handle();
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
-	//	PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
-	//	PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
+		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
 		PrintToLCD::finalizeUpdate();
 ////		
 //		if(fieldTime->Get() > 115)

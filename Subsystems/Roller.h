@@ -47,6 +47,11 @@ class Roller
 			return m_FiredDisks;
 		}
 		
+		void ResetFiredDisks()
+		{
+			m_FiredDisks = 0;
+		}
+		
 		void CreateLimitSwitch(int port, float waittime, float debouncetime);
 		bool GetLimitSwitch();
 		

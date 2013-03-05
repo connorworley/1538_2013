@@ -38,9 +38,8 @@ public:
 	enum AutoModes{
 		amFirst = 0,
 		am3DiskNear,
-		am3DiskHighCenter,
-		am7DiskFront,
-		amDriveStraight,
+		am7Disk,
+		amTesting,
 		amDoNothing,
 		amLast
 	};	

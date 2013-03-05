@@ -85,6 +85,7 @@ void AutoModeController::handle()
 	switch(curCmd.m_Command)
 	{
 		case CMD_DRIVE_DIST:
+			//cout << "Drive dist" <<endl;
 			result = driveDistanceWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
@@ -93,6 +94,7 @@ void AutoModeController::handle()
 			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			break;
 		case CMD_DRIVE_HOLD_DIST:
+			//cout << "Drive hold dist" <<endl;
 			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
@@ -113,6 +115,7 @@ void AutoModeController::handle()
 			break;
 			
 		case CMD_SHOOTINPLACE:
+			//cout << "Shoot in place" <<endl;
 			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
@@ -169,7 +172,23 @@ void AutoModeController::handle()
 		{
 			curCmd = cmdList.front();
 			cmdList.pop_front();
+			
+			if(!thisIsNull)
+				cout << "Time elapsed: " << timer->Get() << endl;
+			
 			timer->Reset();
+			bot->GetFeeder()->ResetFiredDisks();
+			cout << "Moving to next command: ";
+			
+			if(curCmd.m_Command == CMD_DRIVE_DIST)
+				cout << "Drive Distance" << endl;
+			else if(curCmd.m_Command == CMD_DRIVE_HOLD_DIST)
+				cout << "Drive and Hold Distance" << endl;
+			else if(curCmd.m_Command == CMD_TURN)
+				cout << "Turn" << endl;
+			else if(curCmd.m_Command == CMD_SHOOTINPLACE)
+				cout << "Shoot in place" << endl;
+			
 		}
 		else curCmd = RobotCommand();
 	}
@@ -203,7 +222,7 @@ bool AutoModeController::turnHeading(float heading)
 	
 	if((currentHeading < heading + 1 && currentHeading > heading - 1))
 	{
-		printf("Done with distance\r\n");
+		printf("Done with heading\r\n");
 		return false;
 	}	
 	else

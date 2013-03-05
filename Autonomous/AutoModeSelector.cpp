@@ -53,16 +53,12 @@ string AutoModeSelector::Description()
 		sprintf(str,"3 Disc, High, Near       ");
 		s.assign(str);
 		break;
-	case am3DiskHighCenter:
-		sprintf(str,"3 Disc, High, Center     ");
+	case am7Disk:
+		sprintf(str,"7 Disc                   ");
 		s.assign(str);
 		break;
-	case am7DiskFront:
-		sprintf(str,"7 Disc Front             ");
-		s.assign(str);
-		break;
-	case amDriveStraight:
-		sprintf(str,"Drive Straight (Testing) ");
+	case amTesting:
+		sprintf(str,"(Testing)                ");
 		s.assign(str);
 		break;
 	case amDoNothing:
@@ -92,7 +88,7 @@ void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoContro
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.5));
 		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, -1, 4, 4));
 		break;
-	case am7DiskFront:
+	case am7Disk:
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -55, 0, 0.f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 33, 0, 1.0f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 33, 0, 1.0f, 1, Arm::MIDDLE, 0, 0, 0, 0.25));
@@ -101,9 +97,9 @@ void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoContro
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 12, 0, 1.0f, 0, Arm::CRASH_PAD, 0, 0, 0, 1));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 184, 0, 1.0f, 0, Arm::GROUND, -1, 0, 0, 3));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 80, 0, 1.0f, 1, Arm::FAR, -1, 0, 0, 2));
-		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 80, 0, 1.0f, 1, Arm::FAR, -1, -1, 10, 10));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 80, 0, 1.0f, 1, Arm::FAR, -1, -1, 4, 10));
 		break;
-	case amDriveStraight:		
+	case amTesting:		
 		break;
 	case amDoNothing:
 
