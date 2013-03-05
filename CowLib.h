@@ -54,30 +54,6 @@ namespace CowLib
 		static void print(bool enabled, int lineNumber, int startChar, const char * text, float var1, float var2);
 		static void finalizeUpdate();
 	};
-	
-	class Latch
-	{
-	public:
-		Latch()
-		{
-			m_Latched = false;
-		}
-		bool GetLatchedValue(bool currentState)
-		{
-			if(!m_Latched && currentState)
-			{
-				m_Latched = currentState;
-				return m_Latched;
-			}
-			else
-			{
-				m_Latched = false;
-				return m_Latched;
-			}
-		}
-	private:
-		bool m_Latched;
-	};
 }
 
 
