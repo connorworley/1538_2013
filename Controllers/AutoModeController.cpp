@@ -67,8 +67,8 @@ void AutoModeController::addCommand(RobotCommand cmd)
 void AutoModeController::reset()
 {
 	//CowConstants * rc = CowConstants::getInstance();
-	//bot->GetGyro()->Reset();
-	//bot->GetEncoder()->Reset();
+	bot->GetGyro()->Reset();
+	bot->GetEncoder()->Reset();
 
 	cmdList.clear();
 	curCmd = RobotCommand();
@@ -126,7 +126,7 @@ void AutoModeController::handle()
 				m_ShotTime = Timer::GetFPGATimestamp();
 			}
 			
-			if(Timer::GetFPGATimestamp() - m_ShotTime > 0.25)
+			if(Timer::GetFPGATimestamp() - m_ShotTime > 0.25 && m_ShotTime != 0)
 			{
 				result = true;
 				m_ShotTime = 0;
@@ -228,7 +228,7 @@ bool AutoModeController::driveDistanceWithHeading(float distance, float heading,
 	bot->DriveSpeedTurn(distanceP, turn , true);
 //	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
 
-	if(
+	if((currentDistance < distance + 0.25 && currentDistance > distance - 0.25) &&
 		(bot->GetEncoder()->GetRate() < 6 && bot->GetEncoder()->GetRate() > -6) &&
 	   (currentHeading < heading + 1 && currentHeading > heading -1))
 	{

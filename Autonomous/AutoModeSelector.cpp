@@ -82,15 +82,6 @@ string AutoModeSelector::Description()
 void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoController)
 {
 	// addCommand(TYPE, DRIVE COUNTS, HEADING, SHOOTER, ARM PISTON STATE, INTAKE, CHUTE, WANTED # BALLS SHOT, TIMEOUT)
-	
-	
-//	m_Command(CMD_NULL),
-//	m_EncoderCount(0),
-//	m_Heading(0),
-//	m_Shooter(0),
-//	m_ArmSetpoint(0),
-//	m_Intake(0),
-//	m_Timeout(0)
 	autoController->reset();
 	switch(m_Index)
 	{
@@ -100,29 +91,19 @@ void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoContro
 		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.75));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.5));
 		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, -1, 4, 4));
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
 		break;
 	case am7DiskFront:
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -55, 0, 0.5f, 0, Arm::CRASH_PAD, 0, 0, 0, 2.5));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 24, 0, 0.8f, 0, Arm::CRASH_PAD, 0, 0, 0, 2));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.75));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.5));
-		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, -1, 3, 4));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 12, 0, 0.5f, 0, Arm::CRASH_PAD, 0, 0, 0, 1.5));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 180, 0, 0.8f, 0, Arm::GROUND, -0.5, 0, 0, 3));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 80, 0, 0.35f, 1, Arm::FAR, -0.5, 0, 0, 4));
-		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 80, 0, 0.8f, 1, Arm::FAR, -0.5, -1, 7, 6));
-
-
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -55, 0, 0.f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 33, 0, 1.0f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 33, 0, 1.0f, 1, Arm::MIDDLE, 0, 0, 0, 0.25));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 51, 0, 1.0f, 1, Arm::MIDDLE, 0, 0, 0, 1.5));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 51, 0, 1.0f, 1, Arm::MIDDLE, 0, -1, 3, 4.625));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 12, 0, 1.0f, 0, Arm::CRASH_PAD, 0, 0, 0, 1));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 184, 0, 1.0f, 0, Arm::GROUND, -1, 0, 0, 3));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 80, 0, 1.0f, 1, Arm::FAR, -1, 0, 0, 2));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 80, 0, 1.0f, 1, Arm::FAR, -1, -1, 10, 10));
 		break;
-	case amDriveStraight:
-
-//		autoController->addCommand(RobotCommand(CMD_ARM, 30, 0, 0, Arm::MIDDLE, 0, 0, 1.5));
-//		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 65, 0, 1, Arm::MIDDLE, 0, 0, 2));
-//		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 65, 0, 1, Arm::MIDDLE, 0, 0, 2));
-//		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::MIDDLE , 0, 0, 1));
-//		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 0, 0, 1, Arm::MIDDLE , 0, -1, 7));		
+	case amDriveStraight:		
 		break;
 	case amDoNothing:
 
