@@ -28,9 +28,7 @@
 #include <algorithm>
 
 namespace CowLib
-{
-	float VictorLinearize(double goal_speed);
-	float LimitMix(float value, float maxValue);
+{	float LimitMix(float value, float maxValue);
 	float LimitMix(float value);
 	float AnalogInScale(float oldx, double center);
 	

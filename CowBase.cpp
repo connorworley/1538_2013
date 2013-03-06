@@ -58,7 +58,7 @@ public:
 		SetPeriod((1.0/200.0));
 		
 		// Construct CowConstants
-		CowConstants::getInstance();
+		constants = CowConstants::getInstance();
 		
 		GetWatchdog().SetEnabled(false);
 	
@@ -76,7 +76,7 @@ public:
 		constants->restoreData();
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
-		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+	//	PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
 		PrintToLCD::finalizeUpdate();
 		autoIndex = 1;
 	}
@@ -118,7 +118,7 @@ public:
 //		//Print it
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
-		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+	//	PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
 		PrintToLCD::finalizeUpdate();
 //		//sendIOPortData();
 	}
@@ -129,7 +129,7 @@ public:
 //		
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
-		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		//PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
 		PrintToLCD::finalizeUpdate();
 		
 		//sendIOPortData();
@@ -140,7 +140,7 @@ public:
 		bot->Handle();
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
-		PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		//PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
 		PrintToLCD::finalizeUpdate();
 ////		
 //		if(fieldTime->Get() > 115)
