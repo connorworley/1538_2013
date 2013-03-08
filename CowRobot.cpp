@@ -52,7 +52,7 @@ CowRobot::CowRobot()
 	m_Arm = new Arm(ARM_A, ARM_B, ARM_POT, ARMLOCK_SOLENOID_CHAN);
 	m_Intake = new Roller(INTAKE_A, INTAKE_B);
 	m_Feeder = new Roller(FEEDER_A, FEEDER_B);
-	m_Feeder->CreateLimitSwitch(3, CowConstants::getInstance()->getValueForKey("TimeWaitTrigger"), 0.125);
+	m_Feeder->CreateLimitSwitch(3, CowConstants::getInstance()->getValueForKey("TimeWaitTrigger"), 0.25);
 	
 	m_Shooter = new Roller(SHOOTER_A, SHOOTER_B);
 
@@ -68,6 +68,10 @@ CowRobot::CowRobot()
 	m_Gyro = new Gyro(2);
 	m_Gyro->SetSensitivity(0.007); //Kiets
 	m_Gyro->Reset();
+	
+	
+	m_Compressor = new Relay(1);
+	m_PressureSwitch = new DigitalInput(5);
 
 	velTimer = new Timer();
 	velTimer->Start();
@@ -101,6 +105,14 @@ void CowRobot::Handle()
 	
 	//printf("%f, %f\r\n",  m_Encoder->GetDistance(), m_Gyro->GetAngle());
 	//printf("%f\n", m_Gyro->GetAngle());
+	
+//	if(m_PressureSwitch->Get())
+//	{
+//		m_Compressor->Set(Relay::kOff);
+//	} else
+//	{
+//		m_Compressor->Set(Relay::kForward);
+//	}
 }
 
 /// Allows skid steer robot to be driven using tank drive style inputs

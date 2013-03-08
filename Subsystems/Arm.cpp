@@ -84,7 +84,7 @@ void Arm::Handle()
 		m_MotorA->Set(0);
 		m_MotorB->Set(0);
 	}
-	//printf("%f\t\t%f\t\t%f\n", m_Setpoint, m_Pot->GetVoltage(), output);
+	printf("%f\t\t%f\t\t%f\n", m_Setpoint, m_Pot->GetVoltage(), output);
 //	if(m_ArmState == STARTING_POS)
 //		cout << "STARTING POS";
 //	if(m_ArmState == FAR)

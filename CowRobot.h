@@ -96,6 +96,9 @@ private:
 	Roller* m_Feeder;
 	Roller* m_Shooter;
 	
+	Relay* m_Compressor;
+	DigitalInput* m_PressureSwitch;
+	
 	float m_LeftDriveValue;
 	float m_RightDriveValue;
 	

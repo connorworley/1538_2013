@@ -58,16 +58,20 @@ void OperatorController::handle()
 	float armValue = armStick - (m_PreviousArmStick - armStick);
 	bot->GetArm()->SetSetpoint(bot->GetArm()->GetSetpoint() + armValue);
 	
-	if(cb->getOperatorButton(2))
+	if(cb->getOperatorButton(5))
 	{
 		bot->GetArm()->SetState(Arm::GROUND);
+		bot->GetIntake()->SetRaw(-1);
+	} else if(cb->getOperatorButton(4))
+	{
+		bot->GetArm()->SetState(Arm::FEEDER);
 		bot->GetIntake()->SetRaw(-1);
 	}
 	else if(cb->getOperatorButton(1))
 	{
-		bot->GetIntake()->SetRaw(-0.8);
+		bot->GetIntake()->SetRaw(-1);
 	}
-	else if(cb->GetOperatorArmButton(6))
+	else if(cb->getOperatorButton(6))
 	{
 		bot->GetIntake()->SetRaw(1);
 	}
@@ -76,12 +80,12 @@ void OperatorController::handle()
 		bot->GetIntake()->SetRaw(0);
 	}
 	
-	if(!cb->getOperatorButton(10))
+	if(!cb->getOperatorButton(9))
 		bot->GetShooter()->SetRaw(1);
 	else 
 		bot->GetShooter()->SetRaw(0);
 	
-	if(cb->getOperatorButton(5))
+	if(cb->getOperatorButton(10))
 	{
 		bot->GetFeeder()->SetRaw(-1);
 		bot->GetEncoder()->Reset();
@@ -90,11 +94,11 @@ void OperatorController::handle()
 	else 
 		bot->GetFeeder()->SetRaw(0);
 	
-	if(cb->getOperatorButton(8))
+	if(cb->getOperatorButton(11))
 		bot->GetArm()->SetState(Arm::FAR);
-	if(cb->getOperatorButton(9))
-		bot->GetArm()->SetState(Arm::MIDDLE);
 	if(cb->getOperatorButton(7))
+		bot->GetArm()->SetState(Arm::MIDDLE);
+	if(cb->getOperatorButton(8))
 		bot->GetArm()->SetState(Arm::NEAR);
 	if(cb->getSteeringButton(3))
 		bot->GetArm()->SetState(Arm::CRASH_PAD);
@@ -105,12 +109,12 @@ void OperatorController::handle()
 	if(cb->getDriveButton(1))
 		bot->GetArm()->SetState(Arm::STARTING_POS);
 	
-	if(!cb->getOperatorButton(4))
+	if(!cb->getOperatorButton(3))
 		bot->GetFeeder()->SetTimeWaitTrigger(0);
 	else
 		bot->GetFeeder()->SetTimeWaitTrigger(CowConstants::getInstance()->getValueForKey("TimeWaitTrigger"));
 	
-	if(!cb->getOperatorButton(3))
+	if(!cb->getOperatorButton(2))
 		bot->GetArm()->Lock(0);
 	else
 		bot->GetArm()->Lock(1);
