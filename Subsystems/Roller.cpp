@@ -29,47 +29,52 @@ void Roller::Handle()
 		case STAGING:
 			if(GetLimitSwitch())
 			{
+				//cout << "SWITCHING TO FIRING" << endl;
 				m_State = FIRING;
 				m_MotorA->Set(0);
 				m_MotorB->Set(0);
 			} 
 			else
 			{
-				if(m_TriggerTimeout == 0)
-				{
-					m_MotorA->Set(m_RawValue);
-					m_MotorB->Set(m_RawValue);	
-				} 
-				else
-				{
+//				if(m_TriggerTimeout == 0)
+//				{
+//					m_MotorA->Set(m_RawValue);
+//					m_MotorB->Set(m_RawValue);	
+//				} 
+//				else
+//				{
 					m_MotorA->Set(m_RawValue * 0.2);
 					m_MotorB->Set(m_RawValue * 0.2);
-				}
+//				}
 			}
 			
 			//cout << "STAGING" << endl;
 			break;
 		case FIRING:
-			if(!GetLimitSwitch())
+			if(CowRobot::GetInstance()->GetShooter()->GetRaw() != 0)
 			{
-				m_State = FIRED;
-				m_MotorA->Set(0);
-				m_MotorB->Set(0);
-				m_TriggerTime = Timer::GetFPGATimestamp();
-			} 
-			else if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout &&
-					CowRobot::GetInstance()->GetShooter()->GetRaw() != 0)
-			{
-				m_MotorA->Set(m_RawValue);
-				m_MotorB->Set(m_RawValue);
+				if(m_LimitSwitch->Get()) // DO NOT debounce this one
+				{
+//					//cout << "SWITCHING TO FIRED" << endl;
+					m_State = FIRED;
+					m_MotorA->Set(0);
+					m_MotorB->Set(0);
+				} 
+				else if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout)
+				{
+					m_MotorA->Set(m_RawValue);
+					m_MotorB->Set(m_RawValue);
+				}
 			}
 			//cout << "FIRING" << endl;
 			break;
 		case FIRED:
+			m_TriggerTime = Timer::GetFPGATimestamp();
 			// Do any special shot counting code
-			//cout << "FIRED" << endl;
 			m_State = STAGING;
 			m_FiredDisks++;
+			cout << "DISCS FIRED: " << m_FiredDisks << endl;
+			//cout << "FIRED" << endl;
 			break;
 		}
 	} 
@@ -87,6 +92,14 @@ void Roller::CreateLimitSwitch(int port, float waittime, float debouncetime)
 	
 	m_WaitOnTrigger = true;
 	
+	if(GetLimitSwitch())
+	{
+		m_State = FIRING;
+	} else
+	{
+		m_State = STAGING;
+	}
+	
 	SetTimeWaitTrigger(waittime);
 	SetDebounceTime(debouncetime);
 }
@@ -95,15 +108,19 @@ bool Roller::GetLimitSwitch()
 {
 	if(m_LimitSwitch)
 	{
+		//printf("%d\n", m_LimitSwitch->Get());
+		// IF THE SWITCH IS OFF
 		if(m_LimitSwitch->Get())
 		{
+			// BUT WAS ON
 			if((Timer::GetFPGATimestamp() - m_DebounceTimer) <= m_DebounceTime)
 				return true;
+			// OTHERWISE
 			return false;
 		}
 		else
 		{
-			SetDebounceTime(Timer::GetFPGATimestamp());
+			m_DebounceTimer = Timer::GetFPGATimestamp();
 			return true;
 		}
 	}

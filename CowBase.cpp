@@ -47,7 +47,8 @@ class CowBase : public IterativeRobot
 public:
 	CowBase(void)	
 	{
-		printf("Constructing Kiet Change...\n");
+		//printf("Code built on %s, at %s\n", __DATE__, __TIME__);
+		printf("Constructing CowBase... \n");
 //		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
 //		
 //		struct stat data;
