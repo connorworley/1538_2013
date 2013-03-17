@@ -44,8 +44,8 @@ void Roller::Handle()
 //				else
 //				{
 				SetDebounceTime(m_DebounceTimeIn);
-				m_MotorA->Set(m_RawValue * 0.2);
-				m_MotorB->Set(m_RawValue * 0.2);
+				m_MotorA->Set(m_RawValue * 0.3);
+				m_MotorB->Set(m_RawValue * 0.3);
 //				}
 			}
 			
