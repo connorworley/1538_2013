@@ -52,7 +52,7 @@ CowRobot::CowRobot()
 	m_Arm = new Arm(ARM_A, ARM_B, ARM_POT, ARMLOCK_SOLENOID_CHAN);
 	m_Intake = new Roller(INTAKE_A, INTAKE_B);
 	m_Feeder = new Roller(FEEDER_A, FEEDER_B);
-	m_Feeder->CreateLimitSwitch(3, CowConstants::getInstance()->getValueForKey("TimeWaitTrigger"), 0.25);
+	m_Feeder->CreateLimitSwitch(3, CowConstants::getInstance()->getValueForKey("TimeWaitTrigger"), 0.25, 0.05);
 	
 	m_Shooter = new Roller(SHOOTER_A, SHOOTER_B);
 

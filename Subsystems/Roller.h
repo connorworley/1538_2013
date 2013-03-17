@@ -22,6 +22,8 @@ class Roller
 		float m_TriggerTime;
 		float m_DebounceTimer;
 		float m_DebounceTime;
+		float m_DebounceTimeIn;
+		float m_DebounceTimeOut;
 		bool m_PreviousState;
 		
 		bool m_Fired;
@@ -52,7 +54,7 @@ class Roller
 			m_FiredDisks = 0;
 		}
 		
-		void CreateLimitSwitch(int port, float waittime, float debouncetime);
+		void CreateLimitSwitch(int port, float waittime, float debouncetimein, float debouncetimeout);
 		bool GetLimitSwitch();
 		
 		~Roller();

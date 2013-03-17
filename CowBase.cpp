@@ -120,6 +120,7 @@ public:
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
 	//	PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		PrintToLCD::print(true, 4, 1, "A: %.4f, E: %.3f", bot->GetArm()->GetSetpoint(), bot->GetEncoder()->GetDistance());
 		PrintToLCD::finalizeUpdate();
 //		//sendIOPortData();
 	}
@@ -131,6 +132,7 @@ public:
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
 		//PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		PrintToLCD::print(true, 4, 1, "A: %.4f, E: %.3f", bot->GetArm()->GetSetpoint(), bot->GetEncoder()->GetDistance());
 		PrintToLCD::finalizeUpdate();
 		
 		//sendIOPortData();
@@ -142,6 +144,7 @@ public:
 		PrintToLCD::print(true, 1, 1, "Auto Mode: ");
 		PrintToLCD::print(true, 2, 1, autoSelector->Description().c_str());
 		//PrintToLCD::print(true, 3, 1, "Shot Discs: %f", bot->GetFeeder()->GetFiredDisks());
+		PrintToLCD::print(true, 4, 1, "A: %.4f, E: %.3f", bot->GetArm()->GetSetpoint(), bot->GetEncoder()->GetDistance());
 		PrintToLCD::finalizeUpdate();
 ////		
 //		if(fieldTime->Get() > 115)

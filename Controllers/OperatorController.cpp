@@ -48,8 +48,9 @@ void OperatorController::handle()
 	
 	bot->DriveSpeedTurn(cb->getDriveStickY(), cb->getSteeringX(), cb->getSteeringButton(FAST_TURN));
 	
-	bot->GetArm()->SetRaw( -cb->GetOperatorArmY());
 	float armStick = -cb->GetOperatorArmY();//-cb->getOperatorY();
+	
+	bot->GetArm()->SetRaw(armStick);
 	if(armStick < 0.05 && armStick > -0.05)
 	{
 		armStick = 0;

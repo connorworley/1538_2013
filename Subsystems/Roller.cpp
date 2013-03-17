@@ -27,7 +27,7 @@ void Roller::Handle()
 		switch(m_State)
 		{
 		case STAGING:
-			if(GetLimitSwitch())
+			if(GetLimitSwitch() && m_MotorA->Get() != 0)
 			{
 				//cout << "SWITCHING TO FIRING" << endl;
 				m_State = FIRING;
@@ -43,8 +43,9 @@ void Roller::Handle()
 //				} 
 //				else
 //				{
-					m_MotorA->Set(m_RawValue * 0.2);
-					m_MotorB->Set(m_RawValue * 0.2);
+				SetDebounceTime(m_DebounceTimeIn);
+				m_MotorA->Set(m_RawValue * 0.2);
+				m_MotorB->Set(m_RawValue * 0.2);
 //				}
 			}
 			
@@ -53,7 +54,7 @@ void Roller::Handle()
 		case FIRING:
 			if(CowRobot::GetInstance()->GetShooter()->GetRaw() != 0)
 			{
-				if(m_LimitSwitch->Get()) // DO NOT debounce this one
+				if(!GetLimitSwitch())
 				{
 //					//cout << "SWITCHING TO FIRED" << endl;
 					m_State = FIRED;
@@ -62,6 +63,7 @@ void Roller::Handle()
 				} 
 				else if(Timer::GetFPGATimestamp() - m_TriggerTime > m_TriggerTimeout)
 				{
+					SetDebounceTime(m_DebounceTimeOut);
 					m_MotorA->Set(m_RawValue);
 					m_MotorB->Set(m_RawValue);
 				}
@@ -69,6 +71,7 @@ void Roller::Handle()
 			//cout << "FIRING" << endl;
 			break;
 		case FIRED:
+			m_DebounceTimer = 0;
 			m_TriggerTime = Timer::GetFPGATimestamp();
 			// Do any special shot counting code
 			m_State = STAGING;
@@ -86,7 +89,7 @@ void Roller::Handle()
 	
 }
 
-void Roller::CreateLimitSwitch(int port, float waittime, float debouncetime)
+void Roller::CreateLimitSwitch(int port, float waittime, float debouncetimein, float debouncetimeout)
 {
 	m_LimitSwitch = new DigitalInput(port);
 	
@@ -101,7 +104,9 @@ void Roller::CreateLimitSwitch(int port, float waittime, float debouncetime)
 	}
 	
 	SetTimeWaitTrigger(waittime);
-	SetDebounceTime(debouncetime);
+	SetDebounceTime(debouncetimein);
+	m_DebounceTimeIn = debouncetimein;
+	m_DebounceTimeOut = debouncetimeout;
 }
 
 bool Roller::GetLimitSwitch()

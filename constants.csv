@@ -7,5 +7,5 @@ ArmStartingPosition,1.683
 ArmFeederPosition,2.322
 ArmAuto3Diagonal,2.002
 ArmApproachHang,2.894
-ArmFinishHang,3.552
-TimeWaitTrigger,0.5
+ArmFinishHang,3.836
+TimeWaitTrigger,0.58
