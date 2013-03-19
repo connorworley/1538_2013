@@ -1,5 +1,5 @@
-#ifndef _Cow_CONTROL_BOARD_H
-#define _Cow_CONTROL_BOARD_H
+#ifndef _COW_CONTROL_BOARD_H
+#define _COW_CONTROL_BOARD_H
 //=============================================================================
 // File: CowControlBoard.h
 //

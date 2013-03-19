@@ -72,12 +72,11 @@ void Roller::Handle()
 			break;
 		case FIRED:
 			m_DebounceTimer = 0;
-			m_TriggerTime = Timer::GetFPGATimestamp();
 			// Do any special shot counting code
 			m_State = STAGING;
 			m_FiredDisks++;
 			cout << "DISCS FIRED: " << m_FiredDisks << endl;
-			//cout << "FIRED" << endl;
+			StartCooldown();
 			break;
 		}
 	} 
@@ -133,6 +132,12 @@ bool Roller::GetLimitSwitch()
 	{
 		return false;
 	}
+}
+
+void Roller::StartCooldown()
+{
+	printf("COOLDOWN STARTED\n");
+	m_TriggerTime = Timer::GetFPGATimestamp();
 }
 
 void Roller::SetRaw(float value)

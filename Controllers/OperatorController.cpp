@@ -26,6 +26,7 @@
 #include "../Declarations.h"
 #include "../CowConstants.h"
 #include "../Subsystems/Arm.h"
+#include <math.h>
 
 // Constructor
 // TODO: We might not need to pass in Joysticks, if they come from the ControlBoard
@@ -51,6 +52,9 @@ void OperatorController::handle()
 	float armStick = -cb->GetOperatorArmY();//-cb->getOperatorY();
 	
 	bot->GetArm()->SetRaw(armStick);
+	
+	armStick *= fabs(armStick); // smoother slow speeds
+	
 	if(armStick < 0.05 && armStick > -0.05)
 	{
 		armStick = 0;
@@ -82,9 +86,18 @@ void OperatorController::handle()
 	}
 	
 	if(!cb->getOperatorButton(9))
+	{
+		if(bot->GetShooter()->GetRaw() == 0)
+		{
+			// Force cooldown when we turn on the shooter
+			bot->GetFeeder()->StartCooldown();
+		}
 		bot->GetShooter()->SetRaw(1);
-	else 
+	}
+	else
+	{
 		bot->GetShooter()->SetRaw(0);
+	}
 	
 	if(cb->getOperatorButton(10))
 	{

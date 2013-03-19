@@ -1,5 +1,5 @@
-#ifndef _Cow_ROBOT_H
-#define _Cow_ROBOT_H
+#ifndef _COW_ROBOT_H
+#define _COW_ROBOT_H
 //=============================================================================
 // File: CowRobot.h
 //

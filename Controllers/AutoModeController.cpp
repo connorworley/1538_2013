@@ -87,6 +87,11 @@ void AutoModeController::handle()
 		case CMD_DRIVE_DIST:
 			//cout << "Drive dist" <<endl;
 			result = driveDistanceWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
 			bot->GetIntake()->SetRaw(curCmd.m_Intake);
@@ -96,6 +101,11 @@ void AutoModeController::handle()
 		case CMD_DRIVE_HOLD_DIST:
 			//cout << "Drive hold dist" <<endl;
 			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
 			bot->GetIntake()->SetRaw(curCmd.m_Intake);
@@ -106,6 +116,11 @@ void AutoModeController::handle()
 			result = turnHeading(curCmd.m_Heading);
 			bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
 			bot->GetEncoder()->Reset();
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
 			bot->GetIntake()->SetRaw(curCmd.m_Intake);
@@ -117,6 +132,11 @@ void AutoModeController::handle()
 		case CMD_SHOOTINPLACE:
 			//cout << "Shoot in place" <<endl;
 			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
 			bot->GetIntake()->SetRaw(curCmd.m_Intake);
@@ -140,6 +160,11 @@ void AutoModeController::handle()
 			
 		case CMD_ARM:
 			result = false;
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
 			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
 			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
 			bot->GetIntake()->SetRaw(curCmd.m_Intake);

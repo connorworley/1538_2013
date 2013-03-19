@@ -57,6 +57,8 @@ class Roller
 		void CreateLimitSwitch(int port, float waittime, float debouncetimein, float debouncetimeout);
 		bool GetLimitSwitch();
 		
+		void StartCooldown();
+		
 		~Roller();
 };
 #endif

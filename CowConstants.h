@@ -1,5 +1,5 @@
-#ifndef _Cow_CONSTANTS_H
-#define _Cow_CONSTANTS_H
+#ifndef _COW_CONSTANTS_H
+#define _COW_CONSTANTS_H
 //=============================================================================
 // File: CowControlBoard.h
 //
@@ -62,4 +62,4 @@ public:
 	
 };
 
-#endif // _Cow_CONSTANTS_H
+#endif // _COW_CONSTANTS_H
