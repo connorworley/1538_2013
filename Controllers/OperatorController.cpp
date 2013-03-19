@@ -71,7 +71,7 @@ void OperatorController::handle()
 	{
 		bot->GetArm()->SetState(Arm::FEEDER);
 		bot->GetIntake()->SetRaw(-1);
-		bot->GetFeeder()->SetRaw(-1);  // TODO: fix, this doesn't work for some reason
+		bot->GetFeeder()->SetRaw(-1);
 	}
 	else if(cb->getOperatorButton(1))
 	{
@@ -106,8 +106,10 @@ void OperatorController::handle()
 		bot->GetEncoder()->Reset();
 		bot->GetGyro()->Reset();
 	}
-	else 
+	else if(!cb->getOperatorButton(4))
+	{
 		bot->GetFeeder()->SetRaw(0);
+	}
 	
 	if(cb->getOperatorButton(11))
 		bot->GetArm()->SetState(Arm::FAR);
