@@ -71,6 +71,7 @@ void OperatorController::handle()
 	{
 		bot->GetArm()->SetState(Arm::FEEDER);
 		bot->GetIntake()->SetRaw(-1);
+		bot->GetFeeder()->SetRaw(-1);  // TODO: fix, this doesn't work for some reason
 	}
 	else if(cb->getOperatorButton(1))
 	{

@@ -52,6 +52,8 @@ void Roller::Handle()
 			//cout << "STAGING" << endl;
 			break;
 		case FIRING:
+			// TODO:  to add a case for when the shooter is off but we lose a disc
+			// (should never happen, but has in testing when someone pulls a disc out)
 			if(CowRobot::GetInstance()->GetShooter()->GetRaw() != 0)
 			{
 				if(!GetLimitSwitch())
