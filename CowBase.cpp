@@ -25,11 +25,12 @@
 #include "Autonomous/AutoModeSelector.h"
 #include "CowConstants.h"
 #include <sys/stat.h>
+#include <time.h>
 
 // Uncomment this to make the camera work
 //#define USE_CAMERA
 
-time_t constantsLastModified;
+time_t programLastModified;
 
 DriverStationLCD *m_dsLCD;
 
@@ -51,9 +52,12 @@ public:
 		printf("Constructing CowBase... \n");
 //		taskDeleteHookAdd((FUNCPTR)&taskDeleteHook);
 //		
-//		struct stat data;
-//		stat("constants.csv", &data);
-//		constantsLastModified = data.st_mtime;
+		struct stat data;
+		stat("/ni-rt/system/FRC_UserProgram.out", &data);
+		programLastModified = data.st_mtime;
+		
+		//printf("Code deployed: %s\n", ctime(&programLastModified));
+		// TODO: NI FTP does not leave proper timestamps, figure out working way
 //		
 //		fieldTime = new Timer();
 		SetPeriod((1.0/200.0));
