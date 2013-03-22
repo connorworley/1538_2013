@@ -37,8 +37,8 @@ class AutoModeSelector
 public:
 	enum AutoModes{
 		amFirst = 0,
-		am3DiskNear,
 		am7Disk,
+		am3DiskNear,
 		amTesting,
 		amDoNothing,
 		amLast

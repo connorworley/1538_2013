@@ -79,8 +79,8 @@ void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoContro
 		break;
 	case am7Disk:
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,     -55, 0, 0.8f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      38, 0, 1.0f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1.5));
-		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 38, 0, 1.0f, 1.0f, Arm::MIDDLE,    0, 0, 0, 0.25));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      34, 0, 1.0f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1.5));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 34, 0, 1.0f, 1.0f, Arm::MIDDLE,    0, 0, 0, 0.25));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      48, 0, 0.8f, 1.0f, Arm::MIDDLE,    0, 0, 0, 2));
 		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE,    48, 0, 1.0f, 1.0f, Arm::MIDDLE,    0, -1, 3, 4.625));
 		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      12, 0, 1.0f, 0.0f, Arm::CRASH_PAD, 0, 0, 0, 1));

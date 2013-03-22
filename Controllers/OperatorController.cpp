@@ -53,7 +53,7 @@ void OperatorController::handle()
 	
 	bot->GetArm()->SetRaw(armStick);
 	
-	armStick *= fabs(armStick); // smoother slow speeds
+	//armStick *= fabs(armStick); // smoother slow speeds (removed, ambar doesn't like)
 	
 	if(armStick < 0.05 && armStick > -0.05)
 	{
