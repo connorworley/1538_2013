@@ -58,7 +58,7 @@ public:
 		
 		//printf("Code deployed: %s\n", ctime(&programLastModified));
 		// TODO: NI FTP does not leave proper timestamps, figure out working way
-//		
+		
 //		fieldTime = new Timer();
 		SetPeriod((1.0/200.0));
 		
