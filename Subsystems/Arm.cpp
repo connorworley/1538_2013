@@ -66,7 +66,7 @@ void Arm::Handle()
 		else if(m_ArmSpeed == OFF)
 			output = CowLib::LimitMix(output, 0);
 		
-		if((m_Setpoint > CowConstants::getInstance()->getValueForKey("ArmGroundPosition") + 0.01 && output > 0 && m_Setpoint != CowConstants::getInstance()->getValueForKey("ArmFinishHang"))|| m_Pot->GetVoltage() < 1)
+		if(m_Pot->GetVoltage() < 1)
 		{
 			output = 0;
 		
