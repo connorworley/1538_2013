@@ -1,18 +1,18 @@
 //=============================================================================
 // File: AutoModeController.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
-// All rights reserved.  Cow proprietary and confidential.
+// COPYRIGHT 2013 The Holy Cows (1538)
+// All rights reserved.  1538 proprietary and confidential.
 //             
-// The party receiving this software directly from Cow (the "Recipient")
+// The party receiving this software directly from 1538 (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// Cow(the "Agreement").  The software may be used in source code form
+// 1538 (the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. Cow retains all ownership rights in and to
+// the Recipient to its users. 1538 retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -40,7 +40,7 @@ AutoModeController::AutoModeController()
 {
 	bot = CowRobot::GetInstance();
 	timer = new Timer();
-	curCmd = cmdNULL;
+	curCmd = RobotCommand();
 	
 	extendArm = false;
 	
@@ -49,7 +49,7 @@ AutoModeController::AutoModeController()
 	reset();
 }
 
-Relay::Value toRelayValue(cmdArg val)
+Relay::Value toRelayValue(float val)
 {
 	if(val == 1.0)
 		return Relay::kForward;
@@ -59,24 +59,9 @@ Relay::Value toRelayValue(cmdArg val)
 		return Relay::kOff;
 }
 
-void AutoModeController::addCommand(RobotCommandNames_e cmd, 
-					cmdArg arg1, cmdArg arg2, cmdArg arg3, cmdArg arg4, cmdArg arg5, cmdArg arg6, cmdArg arg7, cmdArg arg8)
+void AutoModeController::addCommand(RobotCommand cmd)
 {
-	// Make the new command
-	RobotCommand newCmd;
-	newCmd.cmd = cmd;
-	newCmd.encoderCount = arg1;
-	newCmd.heading = arg2;
-	newCmd.shooter = arg3;
-	newCmd.arm = arg4;
-	newCmd.intake = arg5;
-	newCmd.chute = arg6;
-	newCmd.nBallsWanted = arg7;
-	newCmd.timeout = arg8;
-	
-	
-	// add it to the end of the list
-	cmdList.push_back(newCmd);
+	cmdList.push_back(cmd);
 }
 
 void AutoModeController::reset()
@@ -86,29 +71,105 @@ void AutoModeController::reset()
 	bot->GetEncoder()->Reset();
 
 	cmdList.clear();
-	curCmd = cmdNULL;
+	curCmd = RobotCommand();
 	bot->AskForShift(CowRobot::SHIFTER_STATE_HIGH);
+	m_ShotTime = 0;
 }
 
-bool AutoModeController::handle()
+void AutoModeController::handle()
 {
 	bool result = false;
 	bool thisIsNull = false;
 	
 	// Run the command
-	switch(curCmd.cmd)
+	switch(curCmd.m_Command)
 	{
-		case CMD_DRIVE:
-			result = driveDistanceWithHeading(curCmd.encoderCount, curCmd.heading);
-			break;
 		case CMD_DRIVE_DIST:
-			result = driveDistancePWithHeading(curCmd.encoderCount, curCmd.heading);
+			//cout << "Drive dist" <<endl;
+			result = driveDistanceWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
+			break;
+		case CMD_DRIVE_HOLD_DIST:
+			//cout << "Drive hold dist" <<endl;
+			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			break;
 		case CMD_TURN:
-			result = turnHeading(curCmd.heading);
+			result = turnHeading(curCmd.m_Heading);
 			bot->AskForShift(CowRobot::SHIFTER_STATE_LOW);
 			bot->GetEncoder()->Reset();
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 
+			break;
+			
+		case CMD_SHOOTINPLACE:
+			//cout << "Shoot in place" <<endl;
+			result = driveDistanceHoldWithHeading(curCmd.m_EncoderCount, curCmd.m_Heading, curCmd.m_Throttle);
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
+			
+			if(bot->GetFeeder()->GetFiredDisks() == curCmd.m_NumberOfDisk && m_ShotTime == 0)
+			{
+				cout << "Shot number of disk " << curCmd.m_NumberOfDisk << ", now waiting" << endl;
+				m_ShotTime = Timer::GetFPGATimestamp();
+			}
+			
+			if(Timer::GetFPGATimestamp() - m_ShotTime > 0.25 && m_ShotTime != 0)
+			{
+				result = true;
+				m_ShotTime = 0;
+			}
+			else
+				result = false;
+			break;
+			
+		case CMD_ARM:
+			result = false;
+			if(curCmd.m_Shooter != 0 && bot->GetShooter()->GetRaw() == 0)
+			{
+				// Force cooldown when we turn on the shooter
+				bot->GetFeeder()->StartCooldown();
+			}
+			bot->GetShooter()->SetRaw(curCmd.m_Shooter);
+			bot->GetFeeder()->SetRaw(curCmd.m_Feeder);
+			bot->GetIntake()->SetRaw(curCmd.m_Intake);
+			bot->GetArm()->Lock(true);
+			bot->GetArm()->SetState(curCmd.m_ArmSetpoint);
 			break;
 		case CMD_NULL:
 			thisIsNull = true;
@@ -130,28 +191,46 @@ bool AutoModeController::handle()
 	}
 	
 	// Check if this command is done
-	if(result == true || thisIsNull || timer->Get() > curCmd.timeout){
+	if(result == true || thisIsNull || timer->Get() > curCmd.m_Timeout){
 		// This command is done, go get the next one
 		if(cmdList.size() > 0 )
 		{
 			curCmd = cmdList.front();
 			cmdList.pop_front();
+			
+			if(!thisIsNull)
+				cout << "Time elapsed: " << timer->Get() << endl;
+			
 			timer->Reset();
+			bot->GetFeeder()->ResetFiredDisks();
+			cout << "Moving to next command: ";
+			
+			if(curCmd.m_Command == CMD_DRIVE_DIST)
+				cout << "Drive Distance" << endl;
+			else if(curCmd.m_Command == CMD_DRIVE_HOLD_DIST)
+				cout << "Drive and Hold Distance" << endl;
+			else if(curCmd.m_Command == CMD_TURN)
+				cout << "Turn" << endl;
+			else if(curCmd.m_Command == CMD_SHOOTINPLACE)
+				cout << "Shoot in place" << endl;
+			
 		}
-		else curCmd = cmdNULL;
+		else curCmd = RobotCommand();
 	}
-	return false;
 }
 
 // Drive Functions
 void AutoModeController::doNothing()
 {
 	bot->DriveLeftRight(0,0);
+	bot->GetShooter()->SetRaw(0);
+	bot->GetFeeder()->SetRaw(0);
+	bot->GetIntake()->SetRaw(0);
 	//bot->getArm()->SetMotor(0);
 	//bot->getArm()->
 }
 
-bool AutoModeController::turnHeading(cmdArg heading)
+bool AutoModeController::turnHeading(float heading)
 {
 	float pGain = CowConstants::getInstance()->getValueForKey("turnP");
 	
@@ -168,45 +247,33 @@ bool AutoModeController::turnHeading(cmdArg heading)
 	
 	if((currentHeading < heading + 1 && currentHeading > heading - 1))
 	{
-		printf("Done with distance\r\n");
+		printf("Done with heading\r\n");
 		return false;
 	}	
 	else
 		return false;
 }
 
-bool AutoModeController::driveDistanceWithHeading(cmdArg distance, cmdArg heading)
+bool AutoModeController::driveDistanceWithHeading(float distance, float heading, float throttle)
 {
-	float distanceP = distance - bot->GetEncoder()->GetRaw();
-	float turn = heading - bot->GetGyro()->GetAngle();
-		
-	distanceP *= 0.005;
-	turn /= 100;
-	
-	printf("%f, %d\r\n", distanceP, bot->GetEncoder()->GetRaw());
-		
-	bot->DriveSpeedTurn(LimitMix(-distanceP) * 0.9, LimitMix(-turn)*1.3, true);
-//	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
-
-	return false;
-}
-
-bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg heading)
-{
-	float distanceP = distance - bot->GetEncoder()->GetRaw();
-	float currentDistance = bot->GetEncoder()->GetRaw();
+	float distanceP = distance - bot->GetEncoder()->GetDistance();
+	float currentDistance = bot->GetEncoder()->GetDistance();
 	float currentHeading = bot->GetGyro()->GetAngle();
+	//float currentHeading = 0;
 	float turn = heading - bot->GetGyro()->GetAngle();
 		
-	distanceP *= 0.005;
-	turn /= 100;
+	distanceP *= 0.03;
+	turn /= 100.0;
 	
-	printf("%f, %d\r\n", distanceP, bot->GetEncoder()->GetRaw());
+	distanceP = LimitMix(-distanceP)* 0.5;
+	turn = LimitMix(turn*9);
+	//printf("%f, %f, %f\r\n", distanceP, bot->GetEncoder()->GetDistance(), turn);
 		
-	bot->DriveSpeedTurn(LimitMix(-distanceP) * 0.9, LimitMix(-turn)*1.3, true);
+	bot->DriveSpeedTurn(distanceP, turn , true);
 //	bot->driveSpeedTurn(LimitMix(-distanceP) * 1, 0, true);
 
-	if((currentDistance < distance + 40 && currentDistance > distance - 40) &&
+	if((currentDistance < distance + 0.25 && currentDistance > distance - 0.25) &&
+		(bot->GetEncoder()->GetRate() < 6 && bot->GetEncoder()->GetRate() > -6) &&
 	   (currentHeading < heading + 1 && currentHeading > heading -1))
 	{
 		printf("Done with distance\r\n");
@@ -214,6 +281,23 @@ bool AutoModeController::driveDistancePWithHeading(cmdArg distance, cmdArg headi
 	}	
 	else
 		return false;
+}
+
+bool AutoModeController::driveDistanceHoldWithHeading(float distance, float heading, float throttle)
+{
+	float distanceP = distance - bot->GetEncoder()->GetDistance();
+	//float currentHeading = 0;
+	float turn = heading - bot->GetGyro()->GetAngle();
+		
+	distanceP *= 0.03;
+	turn /= 100.0;
+	
+	distanceP = LimitMix(-distanceP) * throttle;
+	turn = LimitMix(turn*9);
+	//printf("%f, %f, %f\r\n", throttle, bot->GetEncoder()->GetDistance(), turn);
+		
+	bot->DriveSpeedTurn(distanceP, turn , true);
+	return false;
 }
 
 

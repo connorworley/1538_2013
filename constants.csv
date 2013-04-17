@@ -1,0 +1,11 @@
+ArmGroundPosition,3.471
+ArmCrashPadPosition,3.394
+ArmLowPosition,2.247
+ArmMidPosition,2.159
+ArmHighPosition,2.109	
+ArmStartingPosition,1.63
+ArmFeederPosition,2.245
+ArmAuto3Diagonal,2.002
+ArmApproachHang,2.823
+ArmFinishHang,3.471
+TimeWaitTrigger,0.625

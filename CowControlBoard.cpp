@@ -1,18 +1,18 @@
 //=============================================================================
 // File: CowControlBoard.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
-// All rights reserved.  Cow proprietary and confidential.
+// COPYRIGHT 2013 The Holy Cows (1538)
+// All rights reserved.  1538 proprietary and confidential.
 //             
-// The party receiving this software directly from Cow (the "Recipient")
+// The party receiving this software directly from 1538 (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// Cow(the "Agreement").  The software may be used in source code form
+// 1538 (the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. Cow retains all ownership rights in and to
+// the Recipient to its users. 1538 retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -39,6 +39,7 @@ CowControlBoard::CowControlBoard()
 	driveStick = new Joystick(1);
 	steeringWheel = new Joystick(2);
 	operatorPanel = new Joystick(3);
+	m_OperatorArm = new Joystick(4);
 	autoLatch = false;
 	alignLatch = false;
 	rampLatch = false;
@@ -99,6 +100,15 @@ float CowControlBoard::getOperatorDpadX()
 float CowControlBoard::getOperatorDpadY()
 {
 	return operatorPanel->GetRawAxis(6);
+}
+float CowControlBoard::GetOperatorArmY()
+{
+	return m_OperatorArm->GetRawAxis(LEFT_GAMEPAD_Y);
+}
+
+bool CowControlBoard::GetOperatorArmButton(const int button)
+{
+	return m_OperatorArm->GetRawButton(button);
 }
 
 bool CowControlBoard::getDriveButton(const int button)

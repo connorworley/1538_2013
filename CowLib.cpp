@@ -1,18 +1,18 @@
 //=============================================================================
 // File: CowLib.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
-// All rights reserved.  Cow proprietary and confidential.
+// COPYRIGHT 2013 The Holy Cows (1538)
+// All rights reserved.  1538 proprietary and confidential.
 //             
-// The party receiving this software directly from Cow (the "Recipient")
+// The party receiving this software directly from 1538 (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// Cow(the "Agreement").  The software may be used in source code form
+// 1538 (the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. Cow retains all ownership rights in and to
+// the Recipient to its users. 1538 retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -129,59 +129,4 @@ float CowLib::LimitMix(float value)
 	}
 	
 	return limited_value;
-}
-
-float CowLib::VictorLinearize(double goal_speed)
-{
-	const double deadband_value = 0.082;
-	if (goal_speed > deadband_value)
-		goal_speed -= deadband_value;
-	else if (goal_speed < -deadband_value)
-		goal_speed += deadband_value;
-	else
-		goal_speed = 0.0;
-	goal_speed = goal_speed / (1.0 - deadband_value);
-
-	double goal_speed2 = goal_speed * goal_speed;
-	double goal_speed3 = goal_speed2 * goal_speed;
-	double goal_speed4 = goal_speed3 * goal_speed;
-	double goal_speed5 = goal_speed4 * goal_speed;
-	double goal_speed6 = goal_speed5 * goal_speed;
-	double goal_speed7 = goal_speed6 * goal_speed;
-
-	// Original untweaked one.
-	//double victor_fit_c		= -1.6429;
-	//double victor_fit_d		= 4.58861e-08;
-	//double victor_fit_e		= 0.547087;
-	//double victor_fit_f		= -1.19447e-08;
-
-	// Constants for the 5th order polynomial
-	double victor_fit_e1		= 0.437239;
-	double victor_fit_c1		= -1.56847;
-	double victor_fit_a1		= (- (125.0 * victor_fit_e1  + 125.0 * victor_fit_c1 - 116.0) / 125.0);
-	double answer_5th_order = (victor_fit_a1 * goal_speed5
-					+ victor_fit_c1 * goal_speed3
-					+ victor_fit_e1 * goal_speed);
-
-	// Constants for the 7th order polynomial
-	double victor_fit_c2 = -5.46889;
-	double victor_fit_e2 = 2.24214;
-	double victor_fit_g2 = -0.042375;
-	double victor_fit_a2 = (- (125.0 * (victor_fit_c2 + victor_fit_e2 + victor_fit_g2) - 116.0) / 125.0);
-	double answer_7th_order = (victor_fit_a2 * goal_speed7
-					+ victor_fit_c2 * goal_speed5
-					+ victor_fit_e2 * goal_speed3
-					+ victor_fit_g2 * goal_speed);
-
-
-	// Average the 5th and 7th order polynomials
-	double answer =  0.85 * 0.5 * (answer_7th_order + answer_5th_order)
-			+ .15 * goal_speed * (1.0 - deadband_value);
-
-	if (answer > 0.001)
-		answer += deadband_value;
-	else if (answer < -0.001)
-		answer -= deadband_value;
-
-	return answer;
 }

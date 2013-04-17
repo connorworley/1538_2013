@@ -1,18 +1,18 @@
 //=============================================================================
 // File: CowRobot.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
-// All rights reserved.  Cow proprietary and confidential.
+// COPYRIGHT 2013 The Holy Cows (1538)
+// All rights reserved.  1538 proprietary and confidential.
 //             
-// The party receiving this software directly from Cow (the "Recipient")
+// The party receiving this software directly from 1538 (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// Cow(the "Agreement").  The software may be used in source code form
+// 1538 (the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. Cow retains all ownership rights in and to
+// the Recipient to its users. 1538 retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -44,35 +44,41 @@ CowRobot * CowRobot::GetInstance()
 
 /// Constructor for CowRobot
 CowRobot::CowRobot()
-{
+{	
 	// Set up drive motors
-	m_RightDrive = new Victor(RIGHT_DRIVE);
-	m_LeftDrive = new Victor(LEFT_DRIVE);
+	m_RightDrive = new Talon(RIGHT_DRIVE);
+	m_LeftDrive = new Talon(LEFT_DRIVE);
 	
-	m_Arm = new Arm(ARM_A, ARM_B);
+	m_Arm = new Arm(ARM_A, ARM_B, ARM_POT, ARMLOCK_SOLENOID_CHAN);
 	m_Intake = new Roller(INTAKE_A, INTAKE_B);
 	m_Feeder = new Roller(FEEDER_A, FEEDER_B);
+	m_Feeder->CreateLimitSwitch(3, CowConstants::getInstance()->getValueForKey("TimeWaitTrigger"), 0.25, 0.05);
+	
 	m_Shooter = new Roller(SHOOTER_A, SHOOTER_B);
 
-//	//Solenoids
-//	m_Shifter = new Solenoid(SHIFTER_SOLENOID_CHAN);
-//	m_ArmLock = new Solenoid(ARMLOCK_SOLENOID_CHAN);
+	//Solenoids
+	m_Shifter = new Solenoid(SHIFTER_SOLENOID_CHAN);
 
 	// Set up encoders
 	m_Encoder = new Encoder(LEFT_ENCODER_A_CHAN, LEFT_ENCODER_B_CHAN, true, CounterBase::k1X);
-	m_Encoder->SetDistancePerPulse(0.1007081038552321);
-	m_Encoder->SetReverseDirection(false);
+	m_Encoder->SetDistancePerPulse(0.04908734375);
+	m_Encoder->SetReverseDirection(true);
 	m_Encoder->Start();
 
-//	m_Gyro = new Gyro(GYRO_CHAN);
-//	m_Gyro->SetSensitivity(0.0005); //Kiets
-//	m_Gyro->Reset();
+	m_Gyro = new Gyro(2);
+	m_Gyro->SetSensitivity(0.007); //Kiets
+	m_Gyro->Reset();
+	
+	
+	m_Compressor = new Relay(1);
+	m_PressureSwitch = new DigitalInput(5);
 
 	velTimer = new Timer();
 	velTimer->Start();
 
 	m_ShifterCounts = 0;
 	m_CurrentShiftState = SHIFTER_STATE_HIGH;
+	m_ShifterTimer = 0;
 
 	m_LeftDriveValue = 0;
 	m_RightDriveValue = 0;
@@ -90,9 +96,6 @@ void CowRobot::Handle()
 	float tmpLeftMotor = m_LeftDriveValue;
 	float tmpRightMotor = m_RightDriveValue;
 
-	ShifterStates tmpShiftPos = m_CurrentShiftState;
-	AskForShift(tmpShiftPos);
-
 	SetLeftMotors(tmpLeftMotor);
 	SetRightMotors(tmpRightMotor);
 	m_Arm->Handle();
@@ -100,6 +103,16 @@ void CowRobot::Handle()
 	m_Feeder->Handle();
 	m_Shooter->Handle();
 	
+	//printf("%f, %f\r\n",  m_Encoder->GetDistance(), m_Gyro->GetAngle());
+	//printf("%f\n", m_Gyro->GetAngle());
+	
+//	if(m_PressureSwitch->Get())
+//	{
+//		m_Compressor->Set(Relay::kOff);
+//	} else
+//	{
+//		m_Compressor->Set(Relay::kForward);
+//	}
 }
 
 /// Allows skid steer robot to be driven using tank drive style inputs
@@ -171,57 +184,26 @@ Gyro * CowRobot::GetGyro()
 	return m_Gyro;
 }
 
-/// Shifts drive gears. 
-/// @param shifterPosition
-void CowRobot::Shift(ShifterStates shifterPosition)
-{
-	bool solA = false;
-	ShifterStates nextShiftState = m_CurrentShiftState;
-	// It takes lots of logic to shift this year
-	switch (m_CurrentShiftState)
-	{
-	case SHIFTER_STATE_HIGH:
-		solA = false;
-		m_ShifterCounts = 0;
-		
-		nextShiftState = SHIFTER_STATE_LOW;
-		break;
-
-	case SHIFTER_STATE_LOW:
-		solA = true;
-		m_ShifterCounts = 0;
-		
-		nextShiftState = SHIFTER_STATE_HIGH;
-		break;
-	default:
-		nextShiftState = SHIFTER_STATE_HIGH;
-		break;
-	}
-
-	m_Shifter->Set(solA);
-
-	if (m_CurrentShiftState != nextShiftState)
-	{
-		m_LeftDrive->Set(0);
-		m_RightDrive->Set(0);
-		Wait(0.125);
-	}
-
-	m_CurrentShiftState = nextShiftState;
-}
-
 void CowRobot::AskForShift(ShifterStates shifterState)
 {
-	m_CurrentShiftState = shifterState;
+	if(shifterState != m_CurrentShiftState)
+	{
+		m_ShifterTimer = Timer::GetFPGATimestamp();
+		m_Shifter->Set(shifterState);
+		m_CurrentShiftState = shifterState;
+	}
 }
 
 /// sets the left side motors
 void CowRobot::SetLeftMotors(float val)
 {
 	if (val > 1.0)
-		val = 1.00;
+		val = 1.0;
 	if (val < -1.0)
 		val = -1.0;
+
+	if((Timer::GetFPGATimestamp() - m_ShifterTimer) <= 0.125)
+		val = 0;
 
 	m_LeftDrive->SetSpeed(-val);
 }
@@ -230,9 +212,12 @@ void CowRobot::SetLeftMotors(float val)
 void CowRobot::SetRightMotors(float val)
 {
 	if (val > 1.0)
-		val = 1.00;
+		val = 1.0;
 	if (val < -1.0)
 		val = -1.0;
+
+	if((Timer::GetFPGATimestamp() - m_ShifterTimer) <= 0.125)
+		val = 0;
 
 	m_RightDrive->SetSpeed(val);
 }

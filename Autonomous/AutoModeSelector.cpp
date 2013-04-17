@@ -1,18 +1,18 @@
 //=============================================================================
 // File: AutoModeSelector.cpp
 //
-// COPYRIGHT 2012 Robotics Alliance of the West Coast(Cow)
-// All rights reserved.  Cow proprietary and confidential.
+// COPYRIGHT 2013 The Holy Cows (1538)
+// All rights reserved.  1538 proprietary and confidential.
 //             
-// The party receiving this software directly from Cow (the "Recipient")
+// The party receiving this software directly from 1538 (the "Recipient")
 // may use this software and make copies thereof as reasonably necessary solely
 // for the purposes set forth in the agreement between the Recipient and
-// Cow(the "Agreement").  The software may be used in source code form
+// 1538 (the "Agreement").  The software may be used in source code form
 // solely by the Recipient's employees/volunteers.  The Recipient shall have 
 // no right to sublicense, assign, transfer or otherwise provide the source
 // code to any third party. Subject to the terms and conditions set forth in
 // the Agreement, this software, in binary form only, may be distributed by
-// the Recipient to its users. Cow retains all ownership rights in and to
+// the Recipient to its users. 1538 retains all ownership rights in and to
 // the software.
 //
 // This notice shall supercede any other notices contained within the software.
@@ -22,72 +22,41 @@
 #include "../CowConstants.h"
 #include <string>
 
-void AutoModeSelector::increment()
+void AutoModeSelector::Increment()
 {
-	index++;
-	if(index == amLast)
-		index = amFirst + 1;
-	printf("Auto mode selected: %d\r\n",index);
+	m_Index++;
+	if(m_Index == amLast)
+		m_Index = amFirst + 1;
+	printf("Auto mode selected: %d\r\n",m_Index);
 }
 
-string AutoModeSelector::description()
+string AutoModeSelector::Description()
 {
 	char str[25];
 	memset(str, '.', 25);
 	string s = "";
-
-	/*
-	amLeft1,
-	amLeft2,
-	amMiddle1,
-	amMiddle2,
-	amMiddle3,
-	amRight1,
-	amRight2,
 	
-	*/
-	
-	switch (index)
+	switch (m_Index)
 	{
-	case amAimAndFire1s:
-		sprintf(str,"Wait 1s and fire      ");
+	case am3DiskNear:
+		sprintf(str,"3 Disc, High, Near       ");
 		s.assign(str);
 		break;
-	case turnTest:
-		sprintf(str,"Turn test                ");
+	case am7Disk:
+		sprintf(str,"7 Disc                   ");
 		s.assign(str);
 		break;
-	case amAimAndFire3s:
-		sprintf(str,"Wait 3s and fire      ");
-		s.assign(str);
-		break;
-	case amAimAndFire5s:
-		sprintf(str,"Wait 5s and fire      ");
-		s.assign(str);
-		break;
-	case amAimAndFire7s:
-		sprintf(str,"Wait 7s and fire      ");
-		s.assign(str);
-		break;
-	case amAimAndFire9s:
-		sprintf(str,"Wait 9s and fire      ");
-		s.assign(str);
-		break;
-	case amAimAndFire11s:
-		sprintf(str,"Wait 11s and fire      ");
-		s.assign(str);
-		break;
-	case amAimAndFire13s:
-		sprintf(str,"Wait 13s and fire      ");
+	case amTesting:
+		sprintf(str,"(Testing)                ");
 		s.assign(str);
 		break;
 	case amDoNothing:
-		sprintf(str,"Do Nothing             s");
+		sprintf(str,"Do Nothing               ");
 		s.assign(str);
 		break;
 	default:
-		sprintf(str,"It broke              ");
-		index = amFirst + 1;
+		sprintf(str,"It broke                 ");
+		m_Index = amFirst + 1;
 		s.assign(str);
 		break;
 	}
@@ -95,77 +64,38 @@ string AutoModeSelector::description()
 	return s;
 }
 
-void AutoModeSelector::writeToAutoModeController(AutoModeController * autoController)
+void AutoModeSelector::WriteToAutoModeController(AutoModeController * autoController)
 {
-	// addCommand(TYPE, DRIVE COUNTS, HEADING, SHOOTER, ARM PISTON STATE, INTAKE, CHUTE, WANTED # BALLS SHOT, TIMEOUT)
-	
+	cout << "Writing auto controller" << endl;
 	autoController->reset();
-	//autoController->addCommand(CMD_WAIT, 0, 0, ARM_STOP, 1);
-	
-	int shooterKey = CowConstants::getInstance()->getValueForKey("shooterKey");
-	
-	switch(index)
+	switch(m_Index)
 	{
-	
-	case amAimAndFire1s:
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 1.5);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 1, 0, 3);
-		
-//		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 1, 1, 0, 3);
-//
-//		autoController->addCommand(CMD_TURN, 0, 180, 0, 0, 0, 0, 0, 3);
-//		autoController->addCommand(CMD_WAIT, 0, 180, 0, 1, 0, 0, 0, 0.2);
-//		autoController->addCommand(CMD_DRIVE, 1380, 170, 1, 1, 0, 0, 0, 5);
-//		autoController->addCommand(CMD_DRIVE, 0, 170, 1, 1, 0, 0, 0, 5);
-//		autoController->addCommand(CMD_TURN, 0, 0, 0, 0, 0, 0, 0, 3);
-//		// turn on chute
-//		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 1, 1, 2, 3);
-
-
-
-
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
-//		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 1);
-//		autoController->addCommand(CMD_CHUTE, 0, 0, shooterKey, 3);
+	case am3DiskNear:
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, -55, 0, 0.5f, 0, Arm::CRASH_PAD, 0, 0, 0, 2.5));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.45f, 0, Arm::CRASH_PAD, 0, 0, 0, 2));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 24, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.75));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, 0, 0, 0.5));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE, 52, 0, 0.8f, 1, Arm::MIDDLE, 0, -1, 4, 4));
 		break;
-	case turnTest:
-		autoController->addCommand(CMD_TURN, 0, 90, 0, 0, 0, 0, 0, 3600);
-	case amAimAndFire3s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 1, 0, 3);
+	case am7Disk:
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,     -55, 0, 0.8f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      34, 0, 1.0f, 0.5f, Arm::CRASH_PAD, 0, 0, 0, 1.5));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_HOLD_DIST, 34, 0, 0.8f, 1.0f, Arm::MIDDLE,    0, 0, 0, 0.25));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      50, 0, 0.8f, 1.0f, Arm::MIDDLE,    0, 0, 0, 1));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE,    50, 0, 0.8f, 1.0f, Arm::MIDDLE,    0, -1, 3, 4.625));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      12, 0, 1.0f, 0.0f, Arm::CRASH_PAD, 0, 0, 0, 1));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,     141, 0, 1.0f, 0.0f, Arm::GROUND,   -1, 0, 0, 2.75));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      83, 0, 1.0f, 0.0f, Arm::GROUND,      0.5, 0, 0, 0.25));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      83, 0, 1.0f, 0.0f, Arm::GROUND,      -1, 0, 0, 0.75));
+		autoController->addCommand(RobotCommand(CMD_DRIVE_DIST,      83, 0, 1.0f, 1.0f, Arm::FAR,      -1, 0, 0, 1.75));
+		autoController->addCommand(RobotCommand(CMD_SHOOTINPLACE,    83, 0, 1.0f, 1.0f, Arm::FAR,      -1, -1, 4, 10));
 		break;
-	case amAimAndFire5s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 5);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 1, 0, 3);
+	case amTesting:		
 		break;
-	case amAimAndFire7s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 7);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 1, 0, 3);
-		break;
-	case amAimAndFire9s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 9);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 1, 0, 3);
-		break;
-	case amAimAndFire11s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 11);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 1, 0, 3);
-		break;
-	case amAimAndFire13s:
-		//autoController->addCommand(CMD_AUTOAIM, 0, 0, shooterKey, 3);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 0, 0, 13);
-		autoController->addCommand(CMD_WAIT, 0, 0, shooterKey, 0, 0, 1, 0, 3);
-		break;
-		
 	case amDoNothing:
-
 		break;
 	default:
-		index = amFirst + 1;
+		m_Index = amFirst + 1;
 		break;
 	}
 	

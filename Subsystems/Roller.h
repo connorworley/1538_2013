@@ -3,17 +3,61 @@
 
 #include "WPILib.h"
 
+typedef enum {
+	STAGING,
+	FIRING,
+	FIRED
+} FeederStates;
+
 class Roller
 {
 	private:
-		Victor* motorA;
-		Victor* motorB;
-		float rawValue;
+		Talon* m_MotorA;
+		Talon* m_MotorB;
+		float m_RawValue;
+		DigitalInput* m_LimitSwitch;
+		
+		bool m_WaitOnTrigger;
+		float m_TriggerTimeout;
+		float m_TriggerTime;
+		float m_DebounceTimer;
+		float m_DebounceTime;
+		float m_DebounceTimeIn;
+		float m_DebounceTimeOut;
+		bool m_PreviousState;
+		
+		bool m_Fired;
+		FeederStates m_State;
+		unsigned int m_FiredDisks;
 	
 	public:
 		Roller(int motorApwm, int motorBpwm);
 		void Handle();
 		void SetRaw(float value);
+		float GetRaw();
+		void SetTimeWaitTrigger(float time)
+		{
+			m_TriggerTimeout = time;
+		}
+		void SetDebounceTime(float time)
+		{
+			m_DebounceTime = time;
+		}
+		
+		unsigned int GetFiredDisks()
+		{
+			return m_FiredDisks;
+		}
+		
+		void ResetFiredDisks()
+		{
+			m_FiredDisks = 0;
+		}
+		
+		void CreateLimitSwitch(int port, float waittime, float debouncetimein, float debouncetimeout);
+		bool GetLimitSwitch();
+		
+		void StartCooldown();
 		
 		~Roller();
 };
